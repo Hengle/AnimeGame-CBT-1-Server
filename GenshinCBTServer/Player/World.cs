@@ -32,7 +32,7 @@ namespace GenshinCBTServer.Player
         public void ResetScene()
         {
             mobEntitiesNear.Clear();
-            KillEntities(entities);
+            KillEntities(entities.FindAll(e=>e.sceneId<1));
             entities.Clear();
             currentBlock = null;
             monsterDieCount = 0;
@@ -343,7 +343,18 @@ namespace GenshinCBTServer.Player
                     EntityList = { entity.asInfo() },
                     AppearType = vision
                 };
-                client.SendPacket((uint)CmdType.SceneEntityAppearNotify, appearNotify);
+                if (entity.sceneId > 0)
+                {
+                    if (sceneId == entity.sceneId)
+                    {
+                        client.SendPacket((uint)CmdType.SceneEntityAppearNotify, appearNotify);
+                    }
+                }
+                else
+                {
+                    client.SendPacket((uint)CmdType.SceneEntityAppearNotify, appearNotify);
+                }
+               
             }
         }
         public void SendAllEntities()
@@ -358,7 +369,20 @@ namespace GenshinCBTServer.Player
                     EntityList = { entity.asInfo() },
                     AppearType = VisionType.VisionMeet
                 };
-                if (entity is not GameEntityMonster) client.SendPacket((uint)CmdType.SceneEntityAppearNotify, appearNotify);
+                if (entity is not GameEntityMonster)
+                {
+                    if (entity.sceneId > 0)
+                    {
+                        if (sceneId == entity.sceneId)
+                        {
+                            client.SendPacket((uint)CmdType.SceneEntityAppearNotify, appearNotify);
+                        }
+                    }
+                    else
+                    {
+                        client.SendPacket((uint)CmdType.SceneEntityAppearNotify, appearNotify);
+                    }
+                }
             }
             //  client.SendPacket((uint)CmdType.SceneEntityAppearNotify, appearNotify);
         }

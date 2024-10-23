@@ -11,6 +11,8 @@ using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Drawing;
 using static GenshinCBTServer.ENet;
+using GenshinCBTServer.Quests;
+using System.Linq;
 
 namespace GenshinCBTServer
 {
@@ -52,6 +54,7 @@ namespace GenshinCBTServer
     public class Client
     {
         public GuidRandomizer random = new GuidRandomizer();
+        private QuestManager questManager;
         public IntPtr peer;
         public int gamePeer = 0;
         public MapField<uint, uint> openStateMap = new MapField<uint, uint>();
@@ -92,7 +95,7 @@ namespace GenshinCBTServer
         }
         public void AddItem(GameItem item)
         {
-            if (item.GetExcel().itemType == ItemType.ITEM_MATERIAL)
+            if (item.GetExcel().itemType == ItemType.ITEM_MATERIAL || item.GetExcel().itemType == ItemType.ITEM_VIRTUAL)
             {
                 bool found = inventory.Find(i => i.id == item.id) != null;
                 ItemAddHintNotify addHintNotify = new ItemAddHintNotify()
@@ -133,6 +136,10 @@ namespace GenshinCBTServer
             map.Add(type, prop);
         }
 
+        public QuestManager GetQuestManager()
+        {
+            return questManager;
+        }
         public void SendInventory()
         {
             PlayerStoreNotify n = new()
@@ -219,11 +226,23 @@ namespace GenshinCBTServer
             {
                 compoundDataNtf.UnlockCompoundList.Add(compound.id);
             }
+            questManager = new(this);
+            if (questManager.mainQuests.Find(q=>q.id==351) == null && Server.config.QuestEnabled)
+            {
+                GameQuest quest = questManager.AddQuest(35104);
+                if(quest != null)
+                {
+                    quest.finish();
+                }
+               
+                questManager.AddQuest(35101);
+                
+            }
             SendPacket((uint)CmdType.CookDataNotify, cookDataNotify);
             SendPacket((uint)CmdType.CompoundDataNotify, compoundDataNtf);
             SendInventory();
             SendAllAvatars();
-            QuestController.UpdateQuestForClient(this);
+           
             SendPacket((uint)CmdType.OpenStateUpdateNotify, openStateNotify);
             SendPacket((uint)CmdType.AllSeenMonsterNotify, allSeenMonsterNotify);
         }
@@ -307,7 +326,10 @@ namespace GenshinCBTServer
         {
 
         }
-
+        public void SendPacket(CmdType cmdId, IMessage protoMessage)
+        {
+            SendPacket((uint)cmdId, protoMessage);
+        }
         public void SendPacket(uint cmdId, IMessage protoMessage)
         {
             IntPtr packet = Packet.EncodePacket((ushort)cmdId, protoMessage);

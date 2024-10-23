@@ -18,7 +18,7 @@ namespace GenshinCBTServer.Player
         public MotionInfo motionInfo;
         public MapField<uint, float> fightprops = new MapField<uint, float>();
         public MapField<uint, PropValue> props = new MapField<uint, PropValue>();
-        public uint configId, groupId, owner, state, drop_id;
+        public uint configId, groupId,owner,state,drop_id,sceneId;
         public int amount;
         public List<uint> inRegions = new List<uint>();
 
@@ -29,6 +29,23 @@ namespace GenshinCBTServer.Player
             this.id = id;
             this.motionInfo = motionInfo;
         }
+
+        public GameEntity(Client client,CreateEntityInfo entity)
+        {
+            if(entity.EntityCase== CreateEntityInfo.EntityOneofCase.NpcId)
+            {
+                this.id = entity.NpcId;
+                this.EntityType = ProtEntityType.ProtEntityNpc;
+                this.motionInfo = new MotionInfo() { Pos = entity.Pos, Rot = entity.Rot };
+                
+
+            }
+            uint entityId = ((uint)EntityType << 24) + (uint)client.random.Next();
+            this.entityId = entityId;
+            this.owner = (uint)client.gamePeer;
+            sceneId = entity.SceneId;
+        }
+
         public void FightPropUpdate(FightPropType key, float value)
         {
             fightprops[(uint)key] = value;
@@ -39,14 +56,18 @@ namespace GenshinCBTServer.Player
             Client client = GetClientOwner();
             if (!died)
             {
+               
                 Server.Print("Calling monster lua");
                 died = true;
                 new Thread(new ThreadStart(dieStart)).Start();
-            }
 
+               
+            }
+            
         }
         public virtual bool onInteract(Client session, GadgetInteractReq req)
         {
+
             return false;
         }
         public SceneGroup GetGroup()
@@ -84,8 +105,7 @@ namespace GenshinCBTServer.Player
                 );
 
                 client.world.monsterDieCount++;
-            }
-            else if (EntityType == ProtEntityType.ProtEntityGadget)
+            } else if (EntityType == ProtEntityType.ProtEntityGadget)
             {
                 LuaManager.executeTriggersLua(
                     GetClientOwner(),
@@ -138,15 +158,15 @@ namespace GenshinCBTServer.Player
             {
                 EntityId = entityId,
                 FightPropMap = { fightprops }
-
+                
             });
             client.SendPacket((uint)CmdType.EntityFightPropChangeReasonNotify, new EntityFightPropChangeReasonNotify()
             {
                 EntityId = entityId,
-                PropType = (uint)FightPropType.FIGHT_PROP_CUR_HP,
-                PropDelta = GetFightProp(FightPropType.FIGHT_PROP_CUR_HP),
-                Reason = PropChangeReason.PropChangeAbility,
-
+                PropType=(uint)FightPropType.FIGHT_PROP_CUR_HP,
+                PropDelta=GetFightProp(FightPropType.FIGHT_PROP_CUR_HP),
+                Reason=PropChangeReason.PropChangeAbility,
+                
             });
         }
         public float GetFightProp(FightPropType propType)
@@ -158,6 +178,7 @@ namespace GenshinCBTServer.Player
             this.motionInfo = motionInfo;
             if (notify)
             {
+
                 SceneEntityMoveNotify n = new() { EntityId = this.entityId, MotionInfo = motionInfo };
                 Server.clients.Find(client => client.gamePeer == owner).SendPacket((uint)CmdType.SceneEntityMoveNotify, n);
             }
@@ -172,13 +193,13 @@ namespace GenshinCBTServer.Player
                 MotionInfo = motionInfo,
                 LifeState = 1,
 
-                // EntityCase = SceneEntityInfo.EntityOneofCase.Gadget
+               // EntityCase = SceneEntityInfo.EntityOneofCase.Gadget
             };
             if (EntityType == ProtEntityType.ProtEntityNpc)
             {
                 info.Npc = new SceneNpcInfo()
                 {
-                    NpcId = id,
+                    NpcId=id,
                 };
             }
 

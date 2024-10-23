@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,39 @@ namespace GenshinCBTServer.Commands
 {
     public static class BaseCommands
     {
+        [Server.Command("quest", "Quest management")]
+        public static void QuestCmd(string cmd, string[] args)
+        {
+            if (args.Length > 2)
+            {
+                uint uid = uint.Parse(args[0]);
+                Client client = Server.clients.Find(c=>c.uid == uid);
+                if (client != null)
+                {
+                    uint questId = uint.Parse(args[2]);
+                    string subcmd = args[1];
+                    if(subcmd == "start")
+                    {
+                        if(client.GetQuestManager().AddQuest(questId) != null)
+                        {
+                            Server.Print("Quest started");
+                        }
+                        else
+                        {
+                            Server.Print("Quest already started");
+                        }
+                    }
+                }
+                else
+                {
+                    Server.Print("Player not found");
+                }
+            }
+            else
+            {
+                Server.Print("Usage: quest (uid) start,finish (id)");
+            }
+        }
         [Server.Command("account", "Account management")]
         public static void onDispatchCmd(string cmd, string[] args)
         {

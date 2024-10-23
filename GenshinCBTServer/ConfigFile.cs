@@ -12,5 +12,6 @@ namespace GenshinCBTServer
         public string LocalIp = "127.0.0.1";
         public int LocalPort = 22102;
         public int MaxClients = 20;
+        public bool QuestEnabled = false;
     }
 }

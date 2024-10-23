@@ -34,7 +34,10 @@ namespace GenshinCBTServer
             _resourceManager.weaponsPromote = JsonConvert.DeserializeObject<Dictionary<uint, PromoteInfo>>(File.ReadAllText("resources/ExcelOutput/WeaponPromoteExcelConfigData.json"))!;
             _resourceManager.dropData = JsonConvert.DeserializeObject<List<DropData>>(File.ReadAllText("resources/ExcelOutput/DropTreeExcelConfigData.json"))!;
             _resourceManager.childDropData = JsonConvert.DeserializeObject<List<ChildDrop>>(File.ReadAllText("resources/ExcelOutput/DropLeafExcelConfigData.json"))!;
-
+            _resourceManager.mainQuestDict = JsonConvert.DeserializeObject<Dictionary<uint,MainQuestData>>(File.ReadAllText("resources/ExcelOutput/MainQuestExcelConfigData.json"))!;
+            _resourceManager.questDict = JsonConvert.DeserializeObject<Dictionary<uint, QuestData>>(File.ReadAllText("resources/ExcelOutput/QuestExcelConfigData.json"))!;
+            Server.Print($"Loaded {_resourceManager.mainQuestDict.Count} main quests");
+            Server.Print($"Loaded {_resourceManager.questDict.Count} sub quests");
             // functions
             _resourceManager.configGadgetDict = LoadConfigGadget();
             _resourceManager.avatarsData = LoadAvatarExcel();

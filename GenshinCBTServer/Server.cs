@@ -215,7 +215,10 @@ namespace GenshinCBTServer
             ,CmdType.EvtAnimatorParameterNotify,CmdType.ClientAbilityInitFinishNotify,CmdType.PingRsp,CmdType.SceneEntityAppearNotify,CmdType.PlayerStoreNotify];
 
 
-
+        public static uint GetCurrentSeconds()
+        {
+            return (uint)DateTime.Now.Millisecond / 1000;
+        }
         public void PeerHandle()
         {
 

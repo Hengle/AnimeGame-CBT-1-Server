@@ -25,6 +25,8 @@ namespace GenshinCBTServer
         public Dictionary<uint, CookRecipeExcel> cookRecipeDict = new Dictionary<uint, CookRecipeExcel>();
         public Dictionary<uint, CompoundExcel> compoundDict = new Dictionary<uint, CompoundExcel>();
         public Dictionary<string, GadgetConfigRow> configGadgetDict = new Dictionary<string, GadgetConfigRow>();
+        public Dictionary<uint,MainQuestData> mainQuestDict = new Dictionary<uint, MainQuestData>();
+        public Dictionary<uint, QuestData> questDict = new Dictionary<uint, QuestData>();
         public List<DropData> dropData = new List<DropData>();
         public List<ChildDrop> childDropData = new List<ChildDrop>();
 
@@ -44,11 +46,20 @@ namespace GenshinCBTServer
                 for (int i = 0; i < size; i++)
                 {
                     ChildDrop drop = childDrops[i];
+                   
                     ItemData itemD = itemData[drop.item_drop_id];
-                    uint entityId = ((uint)ProtEntityType.ProtEntityGadget << 24) + (uint)session.random.Next();
-                    GameEntityItem gadgetItem = new(entityId, itemD.gadgetId, motion, new GameItem(session, itemD.id));
-                    gadgetItem.item.amount = new Random().Next(1, 10);
-                    dropList.entities.Add(gadgetItem);
+                    if(itemD.itemType == ItemType.ITEM_VIRTUAL)
+                    {
+                        session.AddItem(new GameItem(session, itemD.id) { amount = new Random().Next(1, 10) });
+                    }
+                    else
+                    {
+                        uint entityId = ((uint)ProtEntityType.ProtEntityGadget << 24) + (uint)session.random.Next();
+                        GameEntityItem gadgetItem = new(entityId, itemD.gadgetId, motion, new GameItem(session, itemD.id));
+                        gadgetItem.item.amount = new Random().Next(1, 10);
+                        dropList.entities.Add(gadgetItem);
+                    }
+                   
                 }
             }
             return dropList;
