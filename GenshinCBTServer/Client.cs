@@ -111,7 +111,7 @@ namespace GenshinCBTServer
                 {
                     inventory.Add(item);
                 }
-                SendPacket((uint)CmdType.ItemAddHintNotify, addHintNotify);
+                SendPacket(CmdType.ItemAddHintNotify, addHintNotify);
             }
             else
             {
@@ -122,7 +122,7 @@ namespace GenshinCBTServer
                     ItemList = { new ItemHint() { Count = (uint)item.amount, IsNew = !found, ItemId = item.id } }
                 };
                 inventory.Add(item);
-                SendPacket((uint)CmdType.ItemAddHintNotify, addHintNotify);
+                SendPacket(CmdType.ItemAddHintNotify, addHintNotify);
             }
             SendInventory();
         }
@@ -151,7 +151,7 @@ namespace GenshinCBTServer
             {
                 n.ItemList.Add(item.toProtoItem());
             }
-            SendPacket((uint)CmdType.PlayerStoreNotify, n);
+            SendPacket(CmdType.PlayerStoreNotify, n);
         }
 
         public void InitiateAccount(string token)
@@ -175,7 +175,7 @@ namespace GenshinCBTServer
             {
                 openStateMap[(uint)state] = 1;
             }
-            SendPacket((uint)CmdType.PlayerDataNotify, playerDataNotify);
+            SendPacket(CmdType.PlayerDataNotify, playerDataNotify);
 
             foreach (KeyValuePair<uint, uint> state in openStateMap)
             {
@@ -238,13 +238,13 @@ namespace GenshinCBTServer
                 questManager.AddQuest(35101);
                 
             }
-            SendPacket((uint)CmdType.CookDataNotify, cookDataNotify);
-            SendPacket((uint)CmdType.CompoundDataNotify, compoundDataNtf);
+            SendPacket(CmdType.CookDataNotify, cookDataNotify);
+            SendPacket(CmdType.CompoundDataNotify, compoundDataNtf);
             SendInventory();
             SendAllAvatars();
            
-            SendPacket((uint)CmdType.OpenStateUpdateNotify, openStateNotify);
-            SendPacket((uint)CmdType.AllSeenMonsterNotify, allSeenMonsterNotify);
+            SendPacket(CmdType.OpenStateUpdateNotify, openStateNotify);
+            SendPacket(CmdType.AllSeenMonsterNotify, allSeenMonsterNotify);
         }
 
         //Need to be remade completely
@@ -290,7 +290,7 @@ namespace GenshinCBTServer
                 motionInfo.Rot = sceneEx.bornRot;
             }
 
-            SendPacket((uint)CmdType.PlayerEnterSceneNotify, new PlayerEnterSceneNotify() { SceneId = scene, TargetUid = uid, PrevPos = prevPos, Pos = motionInfo.Pos, PrevSceneId = prevSceneId, Type = enterType, SceneBeginTime = 0 });
+            SendPacket(CmdType.PlayerEnterSceneNotify, new PlayerEnterSceneNotify() { SceneId = scene, TargetUid = uid, PrevPos = prevPos, Pos = motionInfo.Pos, PrevSceneId = prevSceneId, Type = enterType, SceneBeginTime = 0 });
             currentSceneId = scene;
             world.LoadNewScene(currentSceneId);
         }
@@ -318,7 +318,7 @@ namespace GenshinCBTServer
                 notify.AvatarList.Add(avatar.toProto());
             }
 
-            SendPacket((uint)CmdType.AvatarDataNotify, notify);
+            SendPacket(CmdType.AvatarDataNotify, notify);
 
         }
 
