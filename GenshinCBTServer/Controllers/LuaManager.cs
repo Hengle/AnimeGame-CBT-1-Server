@@ -560,13 +560,9 @@ namespace GenshinCBTServer.Controllers
                     groupLua.DoString(group.luaFile.Replace("ScriptLib.", "ScriptLib:"));
 
                     string luaScript = @$"
-                                -- ScriptLib:PrintLog(''..GadgetState.GearStart)
+                              
                                 if {trigger.conditionLua}(context_, evt_) then
                                     {trigger.actionLua}(context_, evt_)
-                                else
-                                    -- ScriptLib:PrintLog('Condition is false for the following reason: '..evt_.param2..' state '..evt_.param1)
-                                   --  ScriptLib:PrintLog(''..type(evt_.param2))
-                                   
                                 end
                             
                         ";

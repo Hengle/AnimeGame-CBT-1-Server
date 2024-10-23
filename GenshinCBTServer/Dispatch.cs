@@ -152,6 +152,20 @@ namespace GenshinCBTServer
 
             await ctx.Response.SendAsync(resp);
         }
+        [StaticRoute(HttpServerLite.HttpMethod.POST, "/mdk/shield/api/login?")]
+        public static async Task sdk_login_cbt2(HttpContext ctx)
+        {
+            string resp = "{\"retcode\": 2003}";
+            
+                        resp = "{\"retcode\": 0,\"data\": { \"uid\": \"1\", \"token\": \"Dio\",\"email\": \"Cane\"}}";
+                  
+            ctx.Response.StatusCode = 200;
+            ctx.Response.ContentLength = resp.Length;
+            ctx.Response.ContentType = "application/json";
+
+            await ctx.Response.SendAsync(resp);
+        }
+        
         [StaticRoute(HttpServerLite.HttpMethod.GET, "/sdk/login")]
         public static async Task sdk_login(HttpContext ctx)
         {
