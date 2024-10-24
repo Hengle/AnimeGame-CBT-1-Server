@@ -404,8 +404,8 @@ namespace GenshinCBTServer.Controllers
             };
             for (int i = 0; i < 200; i++) // todo: get from scene{player.pos.scenepoint}_point.json
             {
-                rsp.UnlockAreaList.Add((uint)i);
-                rsp.UnlockedPointList.Add((uint)i);
+               // rsp.UnlockAreaList.Add((uint)i);
+               // rsp.UnlockedPointList.Add((uint)i);
             }
             rsp.UnlockedPointList.Add(session.unlockedPoints);
             session.SendPacket((uint)CmdType.GetScenePointRsp, rsp);

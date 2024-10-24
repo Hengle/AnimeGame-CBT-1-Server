@@ -17,15 +17,17 @@ namespace GenshinCBTServer.Controllers
         public static void OnLogCutsceneNotify(Client session, CmdType cmdId, Network.Packet packet)
         {
             LogCutsceneNotify req = packet.DecodeBody<LogCutsceneNotify>();
-           
+            
         }
         [Server.Handler(CmdType.AddQuestContentProgressReq)]
         public static void OnAddQuestContentProgressReq(Client session, CmdType cmdId, Network.Packet packet)
         {
+            
             AddQuestContentProgressReq req = packet.DecodeBody<AddQuestContentProgressReq>();
-           // session.GetQuestManager().TriggerEvent((QuestContent)req.ContentType,"", req.Param);
+            Server.Print(req.Param + ", " + req.AddProgress + ", " + ((QuestContent)req.ContentType).ToString());
+            session.GetQuestManager().TriggerProgress((QuestContent)req.ContentType,"", req.Param);
            
-            session.SendPacket(CmdType.AddQuestContentProgressRsp, new AddQuestContentProgressRsp() { ContentType = req.ContentType });
+            session.SendPacket(CmdType.AddQuestContentProgressRsp, new AddQuestContentProgressRsp() { ContentType = req.ContentType,Retcode=0 });
         }
         [Server.Handler(CmdType.QuestCreateEntityReq)]
         public static void OnQuestCreateEntityReq(Client session, CmdType cmdId, Network.Packet packet)

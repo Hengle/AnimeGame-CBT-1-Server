@@ -234,8 +234,8 @@ namespace GenshinCBTServer
                 {
                     quest.finish();
                 }
-               
-                questManager.AddQuest(35101);
+                //Go to Paimon
+                questManager.AddQuest(35100);
                 
             }
             SendPacket(CmdType.CookDataNotify, cookDataNotify);

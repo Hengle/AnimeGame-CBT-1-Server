@@ -2,6 +2,7 @@
 
 using NLua;
 using GenshinCBTServer.Protocol;
+using GenshinCBTServer.Quests;
 
 namespace GenshinCBTServer.Controllers
 {
@@ -73,6 +74,16 @@ namespace GenshinCBTServer.Controllers
         public int GetGroupMonsterCountByGroupId(Client client, int groupId)
         {
             return client.world.entities.FindAll(e => e.groupId == groupId && e is GameEntityMonster).Count;
+        }
+        public int GetQuestState(Client client, int target_eid, int questId)
+        {
+            GameQuest quest = client.GetQuestManager().GetQuestById((uint)questId);
+
+            if(quest == null)
+            {
+                return (int)QuestState.NONE;
+            }
+            return (int)quest.state;
         }
         public int ShowReminder(Client client, int reminderId)
         {

@@ -2,6 +2,93 @@ namespace GenshinCBTServer.Excel;
 using GenshinCBTServer.Data;
 using Newtonsoft.Json;
 
+public enum QuestCond
+{
+    QUEST_COND_NONE = 0,
+
+    QUEST_COND_STATE_EQUAL = 1, 
+
+    QUEST_COND_STATE_NOT_EQUAL = 2, 
+
+    QUEST_COND_PACK_HAVE_ITEM = 3,
+
+    QUEST_COND_AVATAR_ELEMENT_EQUAL = 4, 
+
+    QUEST_COND_AVATAR_ELEMENT_NOT_EQUAL = 5,
+
+    QUEST_COND_AVATAR_CAN_CHANGE_ELEMENT = 6,
+
+    QUEST_COND_WORLD_AREA_LEVEL_EQUAL_GREATER = 7,
+}
+public enum LogicType
+{
+    LOGIC_NONE = 0,
+    LOGIC_AND = 1,
+    LOGIC_OR = 2,
+    LOGIC_NOT = 3,
+    LOGIC_A_AND_ETCOR = 4,
+    LOGIC_A_AND_B_AND_ETCOR = 5,
+    LOGIC_A_OR_ETCAND = 6,
+    LOGIC_A_OR_B_OR_ETCAND = 7,
+    LOGIC_A_AND_B_OR_ETCAND = 8
+}
+
+public static class LogicTypeExtensions
+{
+    public static bool Calculate(this LogicType logicType, uint[] progress)
+    {
+        if (progress.Length == 0)
+        {
+            return true;
+        }
+
+        if (logicType == LogicType.LOGIC_NONE)
+        {
+            return progress[0] == 1;
+        }
+
+        switch (logicType)
+        {
+            case LogicType.LOGIC_AND:
+                return progress.All(i => i == 1);
+            case LogicType.LOGIC_OR:
+                return progress.Any(i => i == 1);
+            case LogicType.LOGIC_NOT:
+                return progress.All(i => i != 1);
+            case LogicType.LOGIC_A_AND_ETCOR:
+                return progress[0] == 1 && progress.Skip(1).Any(i => i == 1);
+            case LogicType.LOGIC_A_AND_B_AND_ETCOR:
+                return progress[0] == 1 && progress[1] == 1 && progress.Skip(2).Any(i => i == 1);
+            case LogicType.LOGIC_A_OR_ETCAND:
+                return progress[0] == 1 || progress.Skip(1).All(i => i == 1);
+            case LogicType.LOGIC_A_OR_B_OR_ETCAND:
+                return progress[0] == 1 || progress[1] == 1 || progress.Skip(2).All(i => i == 1);
+            case LogicType.LOGIC_A_AND_B_OR_ETCAND:
+                return progress[0] == 1 && progress[1] == 1 || progress.Skip(2).All(i => i == 1);
+            default:
+                return progress.Any(i => i == 1);
+        }
+    }
+
+    public static bool Calculate(this LogicType logicType, List<Func<bool>> predicates)
+    {
+        switch (logicType)
+        {
+            case LogicType.LOGIC_AND:
+                return predicates.All(predicate => predicate());
+            case LogicType.LOGIC_OR:
+                return predicates.Any(predicate => predicate());
+            default:
+                Console.WriteLine("Unimplemented logic operation was called");
+                return false;
+        }
+    }
+
+    public static int GetValue(this LogicType logicType)
+    {
+        return (int)logicType;
+    }
+}
 public enum QuestContent
 {
     QUEST_CONTENT_NONE = 0,
@@ -81,12 +168,7 @@ public enum QuestContent
     QUEST_CONTENT_GADGET_STATE_CHANGE = 155, // missing
     QUEST_CONTENT_UNKNOWN = 9999
 }
-public class QuestAcceptCondition
-{
-    public uint type;
-    public uint[] param;
-}
-public class QuestFinishCondition
+public class QuestCondition
 {
     public uint type;
     public uint[] param;
@@ -103,8 +185,10 @@ public class QuestData
     public uint subId;
     public uint mainId;
     public bool finishParent;
-    public List<QuestAcceptCondition> acceptCond;
-    public List<QuestFinishCondition> finishCond;
+    public uint acceptCondComb;
+    public List<QuestCondition> acceptCond;
+    public uint finishCondComb;
+    public List<QuestCondition> finishCond;
     public List<QuestExecuteCondition> finishExec;
 }
 public class MainQuestData

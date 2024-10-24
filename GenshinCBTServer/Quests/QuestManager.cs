@@ -10,6 +10,8 @@ using CsvHelper.Configuration;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Google.Protobuf.WellKnownTypes;
 using System.Reflection;
+using static SQLite.SQLite3;
+using System.Buffers;
 
 namespace GenshinCBTServer.Quests
 {
@@ -38,7 +40,7 @@ namespace GenshinCBTServer.Quests
         public uint finishTime;
         public uint startGameTime;
         public uint ownerUid;
-        public Dictionary<uint, uint> finishProgressList = new();
+        public Dictionary<uint, uint> finishProgressList = new() { {0,0}, { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 } };
         public QuestData GetQuestData()
         {
             return Server.getResources().questDict[subId];
@@ -80,10 +82,11 @@ namespace GenshinCBTServer.Quests
             uint questId = this.subId;
             uint state = (uint)this.state;
 
-            //questManager.queueEvent(QuestCond.QUEST_COND_STATE_EQUAL, questId, state);
-            //questManager.queueEvent(QuestCond.QUEST_COND_STATE_NOT_EQUAL, questId, state);
-           // questManager.TriggerEvent(QuestContent.QUEST_CONTENT_QUEST_STATE_EQUAL, questId, state);
-           // questManager.TriggerEvent(QuestContent.QUEST_CONTENT_QUEST_STATE_NOT_EQUAL, questId, state);
+            questManager.TriggerEvent(QuestCond.QUEST_COND_STATE_EQUAL, questId, state);
+            questManager.TriggerEvent(QuestCond.QUEST_COND_STATE_NOT_EQUAL, questId, state);
+
+            //questManager.TriggerEvent(QuestContent.QUEST_CONTENT_QUEST_STATE_EQUAL, questId, state);
+            //questManager.TriggerEvent(QuestContent.QUEST_CONTENT_QUEST_STATE_NOT_EQUAL, questId, state);
 
         }
         public void finish()
@@ -100,7 +103,7 @@ namespace GenshinCBTServer.Quests
                 GetMainQuest().finish();
             }
 
-            GetQuestData().finishExec.ForEach(e=>GetOwner().GetQuestManager().TriggerExec(this, e, e.param));
+            //GetQuestData().finishExec.ForEach(e=>GetOwner().GetQuestManager().TriggerExec(this, e, e.param));
             triggerStateEvents();  
         }
 
@@ -196,36 +199,27 @@ namespace GenshinCBTServer.Quests
             return parent;
         }
 
-        public void TryFinishSubQuests(uint condType, string paramStr, uint[] parameters)
+        public void TryFinishSubQuests(QuestContent condType, string paramStr, uint[] parameters)
         {
-           /* List<GameQuest> subQuestsWithCond = childQuests.FindAll(q => q.state == QuestState.UNFINISHED && q.GetQuestData().acceptCond!=null)
-                .FindAll(q=>q.GetQuestData().finishCond.Any(q => q.type == condType));
-            foreach (GameQuest subQuestWithCond in subQuestsWithCond)
+
+            List<GameQuest> subQuestsWithCond = childQuests.FindAll(q => q.state == QuestState.UNFINISHED && q.GetQuestData().acceptCond != null)
+                .FindAll(q => q.GetQuestData().finishCond.Any(q => q.type ==(uint) condType));
+
+            QuestManager questManager = GetOwner().GetQuestManager();
+            subQuestsWithCond.ForEach(quest =>
             {
-                var finishCond = subQuestWithCond.GetQuestData().finishCond;
+                List<QuestCondition> finishCond = quest.GetQuestData().finishCond;
+                uint finishCondComb = quest.GetQuestData().finishCondComb;
+                Dictionary<uint,uint> finishProgressList = quest.finishProgressList;
 
-                for (int i = 0; i < finishCond.Count; i++)
+
+                bool shouldFinish = questManager.CheckAndUpdateContent(quest,finishProgressList,finishCond,finishCondComb,condType,paramStr,parameters);
+
+                if (shouldFinish)
                 {
-                    var condition = finishCond[i];
-                    if (condition.type == condType)
-                    {
-                         bool result = this.GetOwner()
-                                           .GetQuestManager()
-                                           .TriggerContent(subQuestWithCond, condition, paramStr, parameters);
-                       // bool result = true;
-
-                        subQuestWithCond.SetFinishProgress((uint)i, (uint)(result ? 1 : 0));
-
-
-                        Server.Print($"Quest finish progress {(QuestContent)condType} {paramStr} with params: {parameters.ToString()} finished: {subQuestWithCond.state==QuestState.FINISHED}");
-                        if (result)
-                        {
-                            
-                            GetOwner().SendPacket(CmdType.QuestListUpdateNotify, new QuestListUpdateNotify() { QuestList = {subQuestWithCond.ToProto()}});
-                        }
-                    }
+                    quest.finish();
                 }
-            }*/
+            });
         }
 
         public void TryFailSubQuests(uint condType, string paramStr, int[] parameters)
@@ -241,16 +235,22 @@ namespace GenshinCBTServer.Quests
     public class QuestManager
     {
         private Client client;
-        
+
         public List<GameMainQuest> mainQuests = new();
         public List<uint> finishedList = new();
+        public Dictionary<QuestContent, BaseContent> contHandlers = new();
 
+        
         public QuestManager(Client client)
         {
             this.client = client;
             //TODO LOAD QUESTS
 
-
+            //Adding here for now
+            contHandlers.Add(QuestContent.QUEST_CONTENT_UNKNOWN, new ContentUnknown());
+            contHandlers.Add(QuestContent.QUEST_CONTENT_NONE, new ContentNone());
+            contHandlers.Add(QuestContent.QUEST_CONTENT_FINISH_PLOT, new ContentFinishPlot());
+            contHandlers.Add(QuestContent.QUEST_CONTENT_TRIGGER_FIRE, new ContentTriggerFire());
             SendAllQuests();
         }
         public GameMainQuest AddMainQuest(QuestData data)
@@ -288,10 +288,77 @@ namespace GenshinCBTServer.Quests
             });
             client.SendPacket(CmdType.QuestListNotify, notify);
         }
-
-        public void TriggerExec(GameQuest gameQuest, QuestExecuteCondition e, string[] param)
+        public List<GameQuest> GetAllQuests()
         {
-           
+            List<GameQuest> quests = new();
+
+            mainQuests.ForEach(m =>
+            {
+                m.childQuests.ForEach(q => { quests.Add(q); });
+            });
+            return quests;
+        }
+        public void TriggerProgress(QuestContent content,string paramStr, params uint[] param)
+        {
+            List<GameMainQuest> quests = mainQuests.FindAll(q => q.state != ParentQuestState.PARENT_QUEST_STATE_FINISHED);
+
+            quests.ForEach(quest =>
+            {
+                quest.TryFinishSubQuests(content,paramStr,param);
+            });
+        }
+        public void TriggerEvent(QuestContent content, params uint[] param)
+        {
+            TriggerProgress(content, "", param);
+        }
+        public void TriggerEvent(QuestCond condType, params uint[] parameters)
+        {
+            TriggerEvent(condType, "", parameters);
+        }
+        public bool WasSubQuestStarted(QuestData data)
+        {
+            return GetAllQuests().Find(q => q.subId == data.subId && q.state != QuestState.UNSTARTED) != null;
+        }
+        public void TriggerEvent(QuestCond condType,string paramStr, params uint[] parameters)
+        {
+            var potentialQuests = Server.getResources().GetQuestDataByConditions(condType, parameters[0], paramStr);
+            if (potentialQuests == null)
+            {
+                return;
+            }
+
+            var questSystem = client.GetQuestManager() ;
+
+            var owner = client;
+            foreach (QuestData questData in potentialQuests)
+            {
+                if (WasSubQuestStarted(questData))
+                {
+                    continue;
+                }
+
+                var acceptCond = questData.acceptCond;
+                uint[] accept = new uint[acceptCond.Count];
+
+                for (int i = 0; i < acceptCond.Count; i++)
+                {
+                    var condition = acceptCond[i];
+                    bool result = questSystem.TriggerCondition(owner, questData, condition, paramStr, parameters);
+                    accept[i] = result ? (uint)1 : 0;
+                }
+
+                bool shouldAccept = ((LogicType)questData.acceptCondComb).Calculate(accept);
+
+                if (shouldAccept)
+                {
+                    var quest = owner.GetQuestManager().AddQuest(questData.subId);
+                    Server.Print($"Added quest {questData.subId} result {quest != null}");
+                }
+            }
+        }
+        public bool TriggerCondition(Client owner, QuestData questData, QuestCondition e, string paramStr, params uint[] parameters)
+        {
+            return true;
         }
 
         public GameQuest GetQuestById(uint v)
@@ -307,5 +374,112 @@ namespace GenshinCBTServer.Quests
             });
             return quest;
         }
+        private BaseContent GetContentHandler(QuestContent type, QuestData questData)
+        {
+            BaseContent handler ;
+            contHandlers.TryGetValue(type, out handler);
+            if (handler == null)
+            {
+                Server.Print($"Could not get handler for content {type} in quest {questData}");
+                return contHandlers[QuestContent.QUEST_CONTENT_UNKNOWN];
+            }
+            return handler;
+        }
+        public bool CheckAndUpdateContent(GameQuest quest, Dictionary<uint, uint> curProgress, List<QuestCondition> conditions, uint logictype, QuestContent condType, string paramStr, uint[] parameters)
+        {
+            var owner = quest.GetOwner();
+            bool changed = false;
+            uint[] finished = new uint[conditions.Count];
+
+            for (int i = 0; i < conditions.Count; i++)
+            {
+                var condition = conditions[i];
+
+                BaseContent handler = GetContentHandler((QuestContent)condition.type, quest.GetQuestData());
+                // only update progress if it's actually affected by the current event
+                if (handler.IsEvent(quest.GetQuestData(), condition, condType, paramStr, parameters))
+                {
+                    var startingProgress = curProgress[(uint)i];
+                    uint result = handler.UpdateProgress(quest, startingProgress, condition, paramStr, parameters);
+                    curProgress[(uint)i] = result;
+                    if (startingProgress != result)
+                    {
+                        changed = true;
+                    }
+                }
+                finished[i] = handler.CheckProgress(quest, condition, curProgress[(uint)i]) ? (uint)1 : 0;
+            }
+
+            if (changed)
+            {
+               //Save?
+            }
+
+            return ((LogicType)logictype).Calculate(finished);
+        }
+
+
     }
+    public class ContentFinishPlot : BaseContent
+    {
+
+    }
+    public class ContentTriggerFire : BaseContent
+    {
+
+    }
+    public class ContentNone : BaseContent
+    {
+
+      
+        public override uint UpdateProgress(GameQuest quest, uint currentProgress, QuestCondition condition, string paramStr, params uint[] parameters)
+        {
+            return 1;
+        }
+
+   
+        public override bool CheckProgress(GameQuest quest, QuestCondition condition, uint currentProgress)
+        {
+            return true;
+        }
+    }
+    public class ContentUnknown : BaseContent
+    {
+        
+        public override uint UpdateProgress(GameQuest quest, uint currentProgress, QuestCondition condition,string paramStr, params uint[] parameters)
+        {
+            return 0;
+        }
+
+    
+        public override bool CheckProgress(GameQuest quest, QuestCondition condition, uint currentProgress)
+        {
+            
+            return false;
+        }
+    }
+    public abstract class BaseContent
+    {
+        public virtual bool IsEvent(QuestData questData, QuestCondition condition, QuestContent type, string paramStr, params uint[] parameters)
+        {
+            return condition.type == (uint)type && condition.param[0] == parameters[0];
+        }
+
+        public virtual uint InitialCheck(GameQuest quest, QuestData questData, QuestCondition condition)
+        {
+            return 0;
+        }
+
+        public virtual uint UpdateProgress(GameQuest quest, uint currentProgress, QuestCondition condition, string paramStr, params uint[] parameters)
+        {
+            return currentProgress + 1;
+        }
+
+        public virtual bool CheckProgress(GameQuest quest, QuestCondition condition, uint currentProgress)
+        {
+            uint target = condition.count > 0 ? condition.count : 1;
+            return currentProgress >= target;
+        }
+    }
+
 }

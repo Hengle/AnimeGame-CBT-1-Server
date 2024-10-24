@@ -220,7 +220,11 @@ namespace GenshinCBTServer
                         GroupSuite suite = new GroupSuite();
                         suite.monsters = suiteTable.GetIntArray("monsters");
                         suite.gadgets = suiteTable.GetIntArray("gadgets");
-
+                        int[] regions_ = suiteTable.GetIntArray("regions");
+                        if (regions_.Contains(504))
+                        {
+                           // Server.Print($"{mainLua} contains region 504");
+                        }
                         group.suites.Add(suite);
                     }
                     LuaTable gadgets = sceneGroup["gadgets"] as LuaTable;  // Cast to LuaTable for tables

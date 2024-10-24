@@ -78,5 +78,10 @@ namespace GenshinCBTServer
         {
             return avatarsData.Find(av => av.id == id)!;
         }
+
+        public List<QuestData> GetQuestDataByConditions(QuestCond condType, uint param, string paramStr)
+        {
+            return questDict.Values.ToList().FindAll(q => q.acceptCond.Any(cond => cond.type == (uint)condType) && q.acceptCond.Any(cond=> cond.param.Contains(param)));
+        }
     }
 }
