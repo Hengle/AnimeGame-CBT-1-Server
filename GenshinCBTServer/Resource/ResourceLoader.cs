@@ -36,6 +36,9 @@ namespace GenshinCBTServer
             _resourceManager.childDropData = JsonConvert.DeserializeObject<List<ChildDrop>>(File.ReadAllText("resources/ExcelOutput/DropLeafExcelConfigData.json"))!;
             _resourceManager.mainQuestDict = JsonConvert.DeserializeObject<Dictionary<uint,MainQuestData>>(File.ReadAllText("resources/ExcelOutput/MainQuestExcelConfigData.json"))!;
             _resourceManager.questDict = JsonConvert.DeserializeObject<Dictionary<uint, QuestData>>(File.ReadAllText("resources/ExcelOutput/QuestExcelConfigData.json"))!;
+            _resourceManager.triggerData = JsonConvert.DeserializeObject<List<TriggerData>>(File.ReadAllText("resources/ExcelOutput/TriggerExcelConfigData.json"))!;
+            Dictionary<uint, TalkData> talks = JsonConvert.DeserializeObject<Dictionary<uint, TalkData>>(File.ReadAllText("resources/ExcelOutput/TalkExcelConfigData.json"))!;
+            _resourceManager.talkData = talks.Values.ToList();
             Server.Print($"Loaded {_resourceManager.mainQuestDict.Count} main quests");
             Server.Print($"Loaded {_resourceManager.questDict.Count} sub quests");
             // functions

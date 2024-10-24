@@ -127,20 +127,10 @@ namespace GenshinCBTServer.Controllers
         public static void OnUnlockTransPointReq(Client session, CmdType cmdId, Network.Packet packet)
         {
             UnlockTransPointReq req = packet.DecodeBody<UnlockTransPointReq>();
-            session.unlockedPoints.Add(req.PointId);
-            UnlockTransPointRsp rsp_ = new() { Retcode = 0 };
-            GetScenePointRsp rsp = new GetScenePointRsp()
-            {
-                SceneId = req.SceneId,
-                BelongUid = session.uid,
-                Retcode = 0,
-            };
-            for (int i = 0; i < 5; i++)
-            {
-                rsp.UnlockAreaList.Add((uint)i);
-            }
-            rsp.UnlockedPointList.Add(session.unlockedPoints);
-            session.SendPacket((uint)CmdType.GetScenePointRsp, rsp);
+           
+            UnlockTransPointRsp rsp_ = new() { Retcode = 0};
+
+            session.UnlockTransPoint(req.SceneId, req.PointId, false);
             session.SendPacket((uint)CmdType.UnlockTransPointRsp, rsp_);
         }
         [Server.Handler(CmdType.EnterSceneReadyReq)]
@@ -407,6 +397,7 @@ namespace GenshinCBTServer.Controllers
                // rsp.UnlockAreaList.Add((uint)i);
                // rsp.UnlockedPointList.Add((uint)i);
             }
+            rsp.UnlockAreaList.Add(session.unlockedAreas.Values.ToList());
             rsp.UnlockedPointList.Add(session.unlockedPoints);
             session.SendPacket((uint)CmdType.GetScenePointRsp, rsp);
         }
@@ -420,14 +411,11 @@ namespace GenshinCBTServer.Controllers
                 Retcode = 0,
 
             };
-            for (int i = 0; i < 200; i++) // 200 just in case, the client will ignore the extra areas
-            {
-                rsp.AreaIdList.Add((uint)i);
-            }
+            rsp.AreaIdList.Add(session.unlockedAreas.Values.ToList());
             rsp.CityInfoList.Add(new CityInfo()
             {
                 CityId = 1,
-                Level = 10,
+                Level = 1,
                 CrystalNum = 10
             });
             session.SendPacket((uint)CmdType.GetSceneAreaRsp, rsp);

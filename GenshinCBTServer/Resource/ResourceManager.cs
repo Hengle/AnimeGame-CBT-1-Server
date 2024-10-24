@@ -27,6 +27,8 @@ namespace GenshinCBTServer
         public Dictionary<string, GadgetConfigRow> configGadgetDict = new Dictionary<string, GadgetConfigRow>();
         public Dictionary<uint,MainQuestData> mainQuestDict = new Dictionary<uint, MainQuestData>();
         public Dictionary<uint, QuestData> questDict = new Dictionary<uint, QuestData>();
+        public List<TriggerData> triggerData = new List<TriggerData>();
+        public List<TalkData> talkData = new List<TalkData>();
         public List<DropData> dropData = new List<DropData>();
         public List<ChildDrop> childDropData = new List<ChildDrop>();
 

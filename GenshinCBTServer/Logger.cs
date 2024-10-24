@@ -16,8 +16,16 @@ public static class Logger
     {
         if (!hideLogs)
         {
-            logWriter.WriteLine($"{DateTime.Now}: {message}");
-            logWriter.Flush();
+            try
+            {
+                logWriter.WriteLine($"{DateTime.Now}: {message}");
+                logWriter.Flush();
+            }
+            catch(Exception e)
+            {
+
+            }
+           
         }
     }
 

@@ -9,7 +9,21 @@ public enum EquipType
     EQUIP_NECKLACE = 5,
     EQUIP_WEAPON = 6
 }
-
+public enum QuestState
+{
+    NONE = 0,
+    UNSTARTED = 1,
+    UNFINISHED = 2,
+    FINISHED = 3,
+    FAILED = 4,
+}
+public enum ParentQuestState
+{
+    PARENT_QUEST_STATE_NONE = 0,
+    PARENT_QUEST_STATE_FINISHED = 1,
+    PARENT_QUEST_STATE_FAILED = 2,
+    PARENT_QUEST_STATE_CANCELED = 3
+}
 public enum WeaponType
 {
     WEAPON_NONE = 0,

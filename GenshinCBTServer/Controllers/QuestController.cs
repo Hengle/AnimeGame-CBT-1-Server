@@ -1,6 +1,7 @@
 ﻿using GenshinCBTServer.Excel;
 using GenshinCBTServer.Player;
 using GenshinCBTServer.Protocol;
+using GenshinCBTServer.Quests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,47 @@ namespace GenshinCBTServer.Controllers
 {
     public class QuestController
     {
+        [Server.Handler(CmdType.NpcTalkReq)]
+        public static void OnNpcTalkReq(Client session, CmdType cmdId, Network.Packet packet)
+        {
+            NpcTalkReq req = packet.DecodeBody<NpcTalkReq>();
+
+            uint talkId = req.TalkId;
+            QuestManager questManager = session.GetQuestManager();
+
+           
+            
+            uint mainQuestId =  talkId / 100;
+            MainQuestData mainQuestData = Server.getResources().mainQuestDict[mainQuestId];
+           
+
+            if (mainQuestData != null)
+            {
+                // This talk is associated with a quest. Handle it.
+                // If the quest has no talk data defined on it, create one.
+                var talkForQuest = new TalkData() {id=talkId };
+                
+                    var talks = mainQuestData.GetTalks().FindAll(p=>p.id == talkId);
+
+                    if (talks.Count > 0)
+                    {
+                        talkForQuest = talks[0];
+                    }
+                
+
+                // Add to the list of done talks for this quest.
+                var mainQuest = questManager.GetMainQuestByTalkId(talkId);
+                if (mainQuest != null)
+                {
+                    mainQuest.talks.Add(talkId, talkForQuest);
+                }
+
+            }
+            questManager.TriggerEvent(QuestContent.QUEST_CONTENT_COMPLETE_ANY_TALK, talkId, 0, 0);
+            questManager.TriggerEvent(QuestContent.QUEST_CONTENT_COMPLETE_TALK, talkId, 0);
+            // questManager.Trigg(QuestCond.QUEST_COND_COMPLETE_TALK, talkId, 0);
+            session.SendPacket(CmdType.NpcTalkRsp, new NpcTalkRsp() { CurTalkId=talkId,NpcEntityId=req.NpcEntityId,Retcode=0});
+        }
         [Server.Handler(CmdType.LogCutsceneNotify)]
         public static void OnLogCutsceneNotify(Client session, CmdType cmdId, Network.Packet packet)
         {

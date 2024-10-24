@@ -3,6 +3,7 @@
 using NLua;
 using GenshinCBTServer.Protocol;
 using GenshinCBTServer.Quests;
+using GenshinCBTServer.Data;
 
 namespace GenshinCBTServer.Controllers
 {
@@ -295,7 +296,7 @@ namespace GenshinCBTServer.Controllers
                 SceneId = client.currentSceneId,
                 PointList = { (uint)scenePointId }
             };
-            //TODO Unlock in client
+            client.UnlockTransPoint(client.currentSceneId, (uint)scenePointId, false);
             client.SendPacket((uint)CmdType.ScenePointUnlockNotify, ntf);
             return 0;
         }

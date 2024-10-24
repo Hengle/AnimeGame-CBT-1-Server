@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Utilities;
+﻿using GenshinCBTServer.Protocol;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,25 @@ namespace GenshinCBTServer.Commands
 {
     public static class BaseCommands
     {
+
+        [Server.Command("unlockall", "Unlock all")]
+        public static void UnlockAllCmd(string cmd, string[] args)
+        {
+            if(args.Length > 0)
+            {
+                uint uid = uint.Parse(args[0]);
+                Client client = Server.clients.Find(c => c.uid == uid);
+
+                if(client != null)
+                {
+                    for(int i=0; i < 200; i++)
+                    {
+                        client.unlockedPoints.Add((uint)i);
+                        client.SendPacket(CmdType.ScenePointUnlockNotify, new ScenePointUnlockNotify() { SceneId=3,PointList = { (uint)i } });
+                    }
+                }
+            }
+        }
         [Server.Command("quest", "Quest management")]
         public static void QuestCmd(string cmd, string[] args)
         {

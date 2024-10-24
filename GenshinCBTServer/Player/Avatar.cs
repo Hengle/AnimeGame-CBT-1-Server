@@ -2,6 +2,7 @@
 using GenshinCBTServer.Protocol;
 using GenshinCBTServer.Data;
 using Google.Protobuf.Collections;
+using GenshinCBTServer.Controllers;
 
 namespace GenshinCBTServer.Player
 {
@@ -19,7 +20,7 @@ namespace GenshinCBTServer.Player
         public MapField<uint, PropValue> props = new MapField<uint, PropValue>();
         public float curHp;
         public uint weaponId { get { return GetExcel().weaponId; } }
-
+        public uint skillDepotId;
         Client client;
         public AvatarData GetExcel()
         {
@@ -37,10 +38,11 @@ namespace GenshinCBTServer.Player
         {
             this.id = id;
             this.client = client;
-            this.level = 5; // currently 5 for testing
+            this.level = 1;
             entityId = ((uint)EntityType << 24) + (uint)client.random.Next();
             guid = (uint)client.random.Next();
             curHp = GetExcel().baseHp;
+            skillDepotId = GetExcel().skillDepotId;
             GameItem weaponitem = new GameItem(client, weaponId);
             client.inventory.Add(weaponitem);
             weaponGuid = weaponitem.guid;
@@ -68,7 +70,7 @@ namespace GenshinCBTServer.Player
                 Guid = guid,
                 PeerId = (uint)client.gamePeer,
                 EquipIdList = { getEquippedWeapon().id },
-                SkillDepotId = Server.getResources().GetAvatarDataById(id).skillDepotId,
+                SkillDepotId = skillDepotId,
                 // TalentIdList = { 1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015 },
                 Weapon = getEquippedWeapon().weaponSceneInfo()
             };
@@ -91,7 +93,7 @@ namespace GenshinCBTServer.Player
                 AvatarId = id,
                 EquipGuidList = { weaponGuid },
                 LifeState = curHp > 0 ? (uint)LifeState.LIFE_ALIVE : (uint)LifeState.LIFE_DEAD,
-                SkillDepotId = Server.getResources().GetAvatarDataById(id).skillDepotId,
+                SkillDepotId = skillDepotId,
             };
             info.TalentIdList.Add(getTalents());
             // info.SkillMap.Add(10001, new AvatarSkillInfo() { });
@@ -112,7 +114,7 @@ namespace GenshinCBTServer.Player
         private List<uint> getTalents()
         {
             List<uint> ids = new List<uint>();
-            AvatarSkillDepotData skillDepotData = Server.getResources().avatarSkillDepotData.Find(d => d.id == GetExcel().skillDepotId)!;
+            AvatarSkillDepotData skillDepotData = Server.getResources().avatarSkillDepotData.Find(d => d.id == skillDepotId)!;
             if (skillDepotData != null)
             {
                 // Server.Print($"Skill Depot trovato: (id: {skillDepotData.id} )" + skillDepotData.talent_groups.Count);
@@ -331,6 +333,28 @@ namespace GenshinCBTServer.Player
 
 
             client.SendPacket((uint)CmdType.SceneEntityDisappearNotify, sceneEntityDisappearNotify);
+        }
+
+        public bool ChangeElement(ElementType targetElement)
+        {
+            if(targetElement == ElementType.Wind)
+            {
+                if(id== 10000005)
+                {
+                    skillDepotId = 504;
+                }
+                else
+                {
+                    skillDepotId = 704;
+                }
+                
+                return true;
+            }
+            AvatarSkillDepotChangeNotify notify = new() { AvatarGuid=guid,EntityId=entityId,SkillDepotId=skillDepotId,TalentIdList = {getTalents() } };
+            client.SendAllAvatars();
+
+            client.SendPacket(CmdType.AvatarSkillDepotChangeNotify, notify);
+            return false;
         }
     }
 }

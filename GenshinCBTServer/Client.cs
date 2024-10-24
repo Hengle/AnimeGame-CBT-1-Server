@@ -13,6 +13,7 @@ using System.Drawing;
 using static GenshinCBTServer.ENet;
 using GenshinCBTServer.Quests;
 using System.Linq;
+using Org.BouncyCastle.Ocsp;
 
 namespace GenshinCBTServer
 {
@@ -72,6 +73,7 @@ namespace GenshinCBTServer
         public MotionInfo motionInfo = new MotionInfo() { Pos = new Vector() { X = 2136.926f, Y = 208, Z = -1172 }, Rot = new(), Speed = new(), State = MotionState.MotionStandby };
         public World world;
         public List<uint> unlockedPoints = new();
+        public Dictionary<uint, uint> unlockedAreas = new();
         public List<uint> inRegions = new List<uint>();
         public MapField<uint, PropValue> GetPlayerProps()
         {
@@ -153,7 +155,10 @@ namespace GenshinCBTServer
             }
             SendPacket(CmdType.PlayerStoreNotify, n);
         }
-
+        public Avatar GetMainAvatar()
+        {
+            return avatars.Find(av => av.id == 10000005 || av.id == 10000007);
+        }
         public void InitiateAccount(string token)
         {
             world = new World(this);
@@ -199,7 +204,7 @@ namespace GenshinCBTServer
             //For testing fast
             // avatars.Add(new Avatar(this, 10000016));
 
-            foreach (var avatar in Server.getResources().avatarsData)
+            /*foreach (var avatar in Server.getResources().avatarsData)
             {
                 if (avatar.id == 10000005 || avatar.id == 10000007 || avatar.id >= 11000000)
                 {
@@ -209,7 +214,7 @@ namespace GenshinCBTServer
             }
 
             // Find the avatar with the id of the first avatar in the team, and get its guid
-            selectedAvatar = (int)avatars.FirstOrDefault((avatar) => avatar.id == team.First()).guid;
+            selectedAvatar = (int)avatars.FirstOrDefault((avatar) => avatar.id == team.First()).guid;*/
             // selectedAvatar = (int)avatars[0].guid;
             // for cooking stuff
             CookDataNotify cookDataNotify = new();
@@ -361,6 +366,43 @@ namespace GenshinCBTServer
                 }
             });
             SendPacket((uint)CmdType.SceneEntityAppearNotify, appear);
+        }
+
+        public void OnEnterRegion(SceneRegion region)
+        {
+            var enterRegionName = "ENTER_REGION_" + region.config_id;
+            this.GetQuestManager().GetAllQuests().FindAll(q=>q.state==QuestState.UNFINISHED).ForEach(quest =>
+            {
+                if (quest.triggerData != null &&
+                    quest.triggers.ContainsKey(enterRegionName))
+                {
+                    // If the trigger hasn't been fired yet
+                    if (quest.triggers[enterRegionName] != true)
+                    {
+                        quest.triggers[enterRegionName] = true;
+                        GetQuestManager().TriggerEvent(QuestContent.QUEST_CONTENT_TRIGGER_FIRE, quest.triggerData[enterRegionName].id);
+                    }
+                }
+            });
+        }
+
+        public bool UnlockTransPoint(uint sceneId, uint pointId, bool isStatue)
+        {
+            unlockedPoints.Add(pointId);
+            GetQuestManager().TriggerEvent(QuestContent.QUEST_CONTENT_UNLOCK_TRANS_POINT, sceneId, pointId);
+           // this.world.callEvent(new ScriptArgs(0, EventType., sceneId, pointId));
+           
+
+            ScenePointUnlockNotify notify = new() { SceneId = sceneId,PointList = { pointId } };
+            SendPacket(CmdType.ScenePointUnlockNotify, notify);
+            return true;
+        }
+
+        public void UnlockSceneArea(uint sceneId, uint areaId)
+        {
+            unlockedAreas.Add(sceneId, areaId);
+            GetQuestManager().TriggerEvent(QuestContent.QUEST_CONTENT_UNLOCK_AREA, sceneId, areaId);
+            SendPacket(CmdType.SceneAreaUnlockNotify,new SceneAreaUnlockNotify() { SceneId = sceneId, AreaList = { areaId } });
         }
 
         public Client(IntPtr iD)

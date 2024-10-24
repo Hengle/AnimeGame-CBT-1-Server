@@ -149,6 +149,7 @@ namespace GenshinCBTServer.Player
                                 args.source_eid = (int)region.config_id;
                                 LuaManager.executeTriggersLua(client, group, args);
                                 Server.Print($"Avatar Entering region id " + region.config_id);
+                                client.OnEnterRegion(region);
                             }
                         }
                         else
