@@ -95,14 +95,14 @@ namespace GenshinCBTServer
             addProp((uint)PropType.PROP_IS_WORLD_ENTERABLE, 1, props);
             return props;
         }
-        public void AddItem(GameItem item)
+        public void AddItem(GameItem item, ItemAddReasonType type= ItemAddReasonType.ItemAddReasonTrifle)
         {
             if (item.GetExcel().itemType == ItemType.ITEM_MATERIAL || item.GetExcel().itemType == ItemType.ITEM_VIRTUAL)
             {
                 bool found = inventory.Find(i => i.id == item.id) != null;
                 ItemAddHintNotify addHintNotify = new ItemAddHintNotify()
                 {
-                    Reason = (uint)ItemAddReasonType.ItemAddReasonTrifle,
+                    Reason = (uint)type,
                     ItemList = { new ItemHint() { Count = (uint)item.amount, IsNew = !found, ItemId = item.id } }
                 };
                 if (found)
@@ -120,7 +120,7 @@ namespace GenshinCBTServer
                 bool found = inventory.Find(i => i.id == item.id) != null;
                 ItemAddHintNotify addHintNotify = new ItemAddHintNotify()
                 {
-                    Reason = (uint)ItemAddReasonType.ItemAddReasonTrifle,
+                    Reason = (uint)type,
                     ItemList = { new ItemHint() { Count = (uint)item.amount, IsNew = !found, ItemId = item.id } }
                 };
                 inventory.Add(item);
@@ -186,7 +186,7 @@ namespace GenshinCBTServer
             {
                 openStateNotify.OpenStateMap.Add(state.Key, state.Value);
             }
-            foreach (ItemData itemData in Server.getResources().itemData.Values)
+           /* foreach (ItemData itemData in Server.getResources().itemData.Values)
             {
                 if (itemData.itemType == ItemType.ITEM_MATERIAL || itemData.itemType == ItemType.ITEM_WEAPON)
                 {
@@ -196,7 +196,7 @@ namespace GenshinCBTServer
                     inventory.Add(it);
                 }
 
-            }
+            }*/
             foreach (uint monsterId in Server.getResources().monsterDataDict.Keys)
             {
                 allSeenMonsterNotify.MonsterIdList.Add(monsterId);

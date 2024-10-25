@@ -1,5 +1,6 @@
 ﻿using GenshinCBTServer.Data;
 using GenshinCBTServer.Excel;
+using GenshinCBTServer.Player;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,11 @@ namespace GenshinCBTServer.Quests
         public ParentQuestState state;
         public bool isFinished = false;
         public Dictionary<uint, TalkData> talks = new();
+
+        public MainQuestData GetData()
+        {
+            return Server.getResources().mainQuestDict[parentQuestId];
+        }
         public GameMainQuest(Client player, uint parentQuestId)
         {
             this.ownerUid = player.uid;
@@ -80,6 +86,13 @@ namespace GenshinCBTServer.Quests
             GetOwner().SendPacket(Protocol.CmdType.FinishedParentQuestNotify, n);
 
             //TODO rewards
+            Server.getResources().GetRewards(GetData().rewardId).ForEach(r =>
+            {
+                GameItem item = new GameItem(GetOwner(),r.itemId);
+                item.amount = (int)r.itemCount;
+                GetOwner().AddItem(item,ItemAddReasonType.ItemAddReasonQuestReward);
+            });
+            
         }
         public ParentQuest toProto()
         {

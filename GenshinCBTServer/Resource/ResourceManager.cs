@@ -32,11 +32,15 @@ namespace GenshinCBTServer
         public List<DropData> dropData = new List<DropData>();
         public List<ChildDrop> childDropData = new List<ChildDrop>();
         public List<ChapterData> chapterData = new List<ChapterData>();
+        public List<RewardData> rewardData = new List<RewardData>();
         public class DropList
         {
             public List<GameEntity> entities = new();
         }
-
+        public List<RewardData> GetRewards(uint id)
+        {
+            return rewardData.FindAll(r=>r.rewardId == id);
+        }
         public DropList GetRandomDrops(Client session, uint id, MotionInfo motion)
         {
             DropList dropList = new DropList();

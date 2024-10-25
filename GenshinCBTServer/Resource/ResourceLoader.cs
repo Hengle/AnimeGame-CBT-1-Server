@@ -41,6 +41,8 @@ namespace GenshinCBTServer
             Dictionary<uint, ChapterData> chapters = JsonConvert.DeserializeObject<Dictionary<uint, ChapterData>>(File.ReadAllText("resources/ExcelOutput/ChapterExcelConfigData.json"))!;
             _resourceManager.talkData = talks.Values.ToList();
             _resourceManager.chapterData=chapters.Values.ToList();
+
+            _resourceManager.rewardData = JsonConvert.DeserializeObject<List<RewardData>>(File.ReadAllText("resources/ExcelOutput/RewardExcelConfigData.json"))!;
             Server.Print($"Loaded {_resourceManager.mainQuestDict.Count} main quests");
             Server.Print($"Loaded {_resourceManager.questDict.Count} sub quests");
             // functions
