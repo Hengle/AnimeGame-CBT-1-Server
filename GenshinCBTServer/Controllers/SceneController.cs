@@ -397,7 +397,7 @@ namespace GenshinCBTServer.Controllers
                // rsp.UnlockAreaList.Add((uint)i);
                // rsp.UnlockedPointList.Add((uint)i);
             }
-            rsp.UnlockAreaList.Add(session.unlockedAreas.Values.ToList());
+            rsp.UnlockAreaList.Add(session.unlockedAreas.Keys.ToList());
             rsp.UnlockedPointList.Add(session.unlockedPoints);
             session.SendPacket((uint)CmdType.GetScenePointRsp, rsp);
         }
@@ -411,7 +411,7 @@ namespace GenshinCBTServer.Controllers
                 Retcode = 0,
 
             };
-            rsp.AreaIdList.Add(session.unlockedAreas.Values.ToList());
+            rsp.AreaIdList.Add(session.unlockedAreas.Keys.ToList());
             rsp.CityInfoList.Add(new CityInfo()
             {
                 CityId = 1,
@@ -579,8 +579,8 @@ namespace GenshinCBTServer.Controllers
                 EntityList = { NewAv.asInfo() },
                 AppearType = VisionType.VisionReplace
             };
-            if (guid != prevAv.guid) session.SendPacket((uint)CmdType.SceneEntityDisappearNotify, disappearNotify);
-            session.SendPacket((uint)CmdType.SceneEntityAppearNotify, appearNotify);
+            session.SendPacket(CmdType.SceneEntityDisappearNotify, disappearNotify);
+            session.SendPacket(CmdType.SceneEntityAppearNotify, appearNotify);
         }
 
         public static void SendEnterSceneInfo(Client session)

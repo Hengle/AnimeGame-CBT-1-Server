@@ -400,7 +400,7 @@ namespace GenshinCBTServer
 
         public void UnlockSceneArea(uint sceneId, uint areaId)
         {
-            unlockedAreas.Add(sceneId, areaId);
+           if(!unlockedAreas.ContainsKey(areaId)) unlockedAreas.Add(areaId, sceneId);
             GetQuestManager().TriggerEvent(QuestContent.QUEST_CONTENT_UNLOCK_AREA, sceneId, areaId);
             SendPacket(CmdType.SceneAreaUnlockNotify,new SceneAreaUnlockNotify() { SceneId = sceneId, AreaList = { areaId } });
         }

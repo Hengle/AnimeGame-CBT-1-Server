@@ -354,6 +354,7 @@ namespace GenshinCBTServer.Player
             client.SendAllAvatars();
 
             client.SendPacket(CmdType.AvatarSkillDepotChangeNotify, notify);
+            SceneController.SwitchAvatar(client, (uint)client.selectedAvatar);
             return false;
         }
     }

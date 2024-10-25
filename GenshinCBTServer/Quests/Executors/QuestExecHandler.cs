@@ -18,11 +18,17 @@ namespace GenshinCBTServer.Quests.Executors
         {
             // Unlock the trans point for the player.
             uint sceneId = uint.Parse(paramStr[0]);
-            uint pointId = uint.Parse(paramStr[1]);
-            bool isStatue = quest.mainId == 303 || quest.mainId == 352;
+            string[] ids = paramStr[1].Split(',');
 
+           
+            bool isStatue = quest.mainId == 303 || quest.mainId == 352;
+            foreach(string id in ids)
+            {
+                uint pointId = uint.Parse(id);
+                quest.GetOwner().UnlockTransPoint(sceneId, pointId, isStatue);
+            }
             // Done.
-            return quest.GetOwner().UnlockTransPoint(sceneId, pointId, isStatue);
+            return true;
         }
     }
     public class ExecUnlockArea : QuestExecHandler

@@ -31,7 +31,7 @@ namespace GenshinCBTServer
         public List<TalkData> talkData = new List<TalkData>();
         public List<DropData> dropData = new List<DropData>();
         public List<ChildDrop> childDropData = new List<ChildDrop>();
-
+        public List<ChapterData> chapterData = new List<ChapterData>();
         public class DropList
         {
             public List<GameEntity> entities = new();

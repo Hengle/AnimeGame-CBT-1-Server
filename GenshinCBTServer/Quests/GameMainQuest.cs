@@ -50,7 +50,36 @@ namespace GenshinCBTServer.Quests
         }
         public void finish()
         {
+            if (this.isFinished)
+            {
+                Server.Print("Skip main quest finishing because it's already finished");
+                return;
+            }
 
+            this.isFinished = true;
+            this.state = ParentQuestState.PARENT_QUEST_STATE_FINISHED;
+            FinishedParentQuestNotify n = new()
+            {
+                ParentQuestList = { }
+            };
+           
+            var parentQuest = new ParentQuest() {
+                ParentQuestId = parentQuestId,
+                IsFinished=isFinished,
+                ChildQuestList = {}
+            };
+            childQuests.ForEach(q =>
+            {
+                parentQuest.ChildQuestList.Add(new ChildQuest()
+                {
+                    QuestId = q.subId,
+                    State = (uint)q.state
+                });
+            });
+            n.ParentQuestList.Add(parentQuest);
+            GetOwner().SendPacket(Protocol.CmdType.FinishedParentQuestNotify, n);
+
+            //TODO rewards
         }
         public ParentQuest toProto()
         {

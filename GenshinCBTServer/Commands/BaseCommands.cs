@@ -1,4 +1,5 @@
 ﻿using GenshinCBTServer.Protocol;
+using GenshinCBTServer.Quests;
 using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,15 @@ namespace GenshinCBTServer.Commands
                         {
                             Server.Print("Quest already started");
                         }
+                    }else if (subcmd == "finishall")
+                    {
+
+                        Server.getResources().questDict.Values.ToList().ForEach(r =>
+                        {
+                            GameQuest quest = client.GetQuestManager().AddQuest(r.subId);
+                            quest.finish();
+                        });
+                        
                     }
                 }
                 else

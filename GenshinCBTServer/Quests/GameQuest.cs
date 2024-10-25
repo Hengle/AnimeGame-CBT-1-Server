@@ -49,7 +49,7 @@ namespace GenshinCBTServer.Quests
             {
                 startTime = Server.GetCurrentSeconds();
                 startGameTime = 1;
-                //TODO trigger cond
+               
 
                 var triggerCond = GetQuestData().finishCond.Where(p => p.type == (uint)QuestContent.QUEST_CONTENT_TRIGGER_FIRE).ToList();
 
@@ -82,6 +82,16 @@ namespace GenshinCBTServer.Quests
                 notify.QuestList.Add(ToProto());
 
                 GetOwner().SendPacket(CmdType.QuestListUpdateNotify, notify);
+                ChapterData chapter = Server.getResources().chapterData.Find(c => c.beginMainQuestId == mainId);
+                if (chapter !=null)
+                {
+                    ChapterStateNotify n = new()
+                    {
+                        ChapterId = chapter.id,
+                        ChapterState = ChapterState.ChapterBegin
+                    };
+                   GetOwner().SendPacket(CmdType.ChapterStateNotify, n);
+                }
 
             }
         }

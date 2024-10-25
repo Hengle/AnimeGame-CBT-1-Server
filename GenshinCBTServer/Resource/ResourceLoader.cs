@@ -38,7 +38,9 @@ namespace GenshinCBTServer
             _resourceManager.questDict = JsonConvert.DeserializeObject<Dictionary<uint, QuestData>>(File.ReadAllText("resources/ExcelOutput/QuestExcelConfigData.json"))!;
             _resourceManager.triggerData = JsonConvert.DeserializeObject<List<TriggerData>>(File.ReadAllText("resources/ExcelOutput/TriggerExcelConfigData.json"))!;
             Dictionary<uint, TalkData> talks = JsonConvert.DeserializeObject<Dictionary<uint, TalkData>>(File.ReadAllText("resources/ExcelOutput/TalkExcelConfigData.json"))!;
+            Dictionary<uint, ChapterData> chapters = JsonConvert.DeserializeObject<Dictionary<uint, ChapterData>>(File.ReadAllText("resources/ExcelOutput/ChapterExcelConfigData.json"))!;
             _resourceManager.talkData = talks.Values.ToList();
+            _resourceManager.chapterData=chapters.Values.ToList();
             Server.Print($"Loaded {_resourceManager.mainQuestDict.Count} main quests");
             Server.Print($"Loaded {_resourceManager.questDict.Count} sub quests");
             // functions
