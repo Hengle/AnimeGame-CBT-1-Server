@@ -47,6 +47,7 @@ namespace GenshinCBTServer.Quests
             execHandlers.Add(QuestExec.QUEST_EXEC_CHANGE_AVATAR_ELEMENT, new ExecChangeAvatarElement());
             execHandlers.Add(QuestExec.QUEST_EXEC_UNLOCK_POINT, new ExecUnlockPoint());
             execHandlers.Add(QuestExec.QUEST_EXEC_UNLOCK_AREA, new ExecUnlockArea());
+            execHandlers.Add(QuestExec.QUEST_EXEC_ADD_QUEST_PROGRESS, new ExecAddQuestProgress());
             SendAllQuests();
         }
         public GameMainQuest AddMainQuest(QuestData data)

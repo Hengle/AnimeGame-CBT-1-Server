@@ -14,6 +14,7 @@ using static GenshinCBTServer.ENet;
 using GenshinCBTServer.Quests;
 using System.Linq;
 using Org.BouncyCastle.Ocsp;
+using System.Numerics;
 
 namespace GenshinCBTServer
 {
@@ -75,6 +76,53 @@ namespace GenshinCBTServer
         public List<uint> unlockedPoints = new();
         public Dictionary<uint, uint> unlockedAreas = new();
         public List<uint> inRegions = new List<uint>();
+
+        public int adventureLevel = 1;
+        public int GetExp
+        {
+            get
+            {
+                GameItem item = inventory.Find(i => i.id == 102);
+                if (item != null)
+                {
+                    return item.amount;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+        public int GetPrimo
+        {
+            get
+            {
+                GameItem item = inventory.Find(i => i.id == 201);
+                if (item != null)
+                {
+                    return item.amount;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+        public int GetMora
+        {
+            get
+            {
+                GameItem item = inventory.Find(i => i.id == 202);
+                if (item != null)
+                {
+                    return item.amount;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
         public MapField<uint, PropValue> GetPlayerProps()
         {
             MapField<uint, PropValue> props = new MapField<uint, PropValue>();
@@ -86,12 +134,12 @@ namespace GenshinCBTServer
             addProp((uint)PropType.PROP_MAX_STAMINA, 15000, props);
             addProp((uint)PropType.PROP_CUR_PERSIST_STAMINA, 15000, props);
             addProp((uint)PropType.PROP_CUR_TEMPORARY_STAMINA, 15000, props);
-            addProp((uint)PropType.PROP_PLAYER_LEVEL, 20, props);
-            addProp((uint)PropType.PROP_PLAYER_EXP, 0, props);
+            addProp((uint)PropType.PROP_PLAYER_LEVEL, adventureLevel, props);
+            addProp((uint)PropType.PROP_PLAYER_EXP, GetExp, props);
             addProp((uint)PropType.PROP_IS_SPRING_AUTO_USE, 1, props);
             addProp((uint)PropType.PROP_SPRING_AUTO_USE_PERCENT, 50, props);
-            addProp((uint)PropType.PROP_PLAYER_HCOIN, 2000, props);
-            addProp((uint)PropType.PROP_PLAYER_SCOIN, 10000, props);
+            addProp((uint)PropType.PROP_PLAYER_HCOIN, GetPrimo, props);
+            addProp((uint)PropType.PROP_PLAYER_SCOIN, GetMora, props);
             addProp((uint)PropType.PROP_IS_WORLD_ENTERABLE, 1, props);
             return props;
         }
@@ -154,6 +202,26 @@ namespace GenshinCBTServer
                 n.ItemList.Add(item.toProtoItem());
             }
             SendPacket(CmdType.PlayerStoreNotify, n);
+            RecalculateAdventureLevel();
+            PlayerPropNotify props = new()
+            {
+                PropMap = { GetPlayerProps() }
+            };
+            SendPacket(CmdType.PlayerPropNotify, props);
+        }
+        public void RecalculateAdventureLevel()
+        {
+            int oldLevel = adventureLevel;
+
+            PlayerLevelData levelData = Server.getResources().GetPlayerLevel(adventureLevel);
+
+            
+            if(GetExp >= levelData.exp && adventureLevel != 20)
+            {
+                adventureLevel += 1;
+                
+            }
+            
         }
         public Avatar GetMainAvatar()
         {
@@ -403,6 +471,13 @@ namespace GenshinCBTServer
            if(!unlockedAreas.ContainsKey(areaId)) unlockedAreas.Add(areaId, sceneId);
             GetQuestManager().TriggerEvent(QuestContent.QUEST_CONTENT_UNLOCK_AREA, sceneId, areaId);
             SendPacket(CmdType.SceneAreaUnlockNotify,new SceneAreaUnlockNotify() { SceneId = sceneId, AreaList = { areaId } });
+        }
+
+        //Need to create a separated class?
+        public void AddQuestProgress(uint id, uint newCount)
+        {
+            //TODO save in a dic or mapfield
+            GetQuestManager().TriggerEvent(QuestContent.QUEST_CONTENT_ADD_QUEST_PROGRESS, id, newCount);
         }
 
         public Client(IntPtr iD)

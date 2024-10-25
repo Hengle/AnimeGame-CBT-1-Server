@@ -12,6 +12,20 @@ namespace GenshinCBTServer.Quests.Executors
     {
         public abstract bool Execute(GameQuest quest, QuestExecuteCondition condition, params string[] paramStr);
     }
+    public class ExecAddQuestProgress : QuestExecHandler
+    {
+        public override bool Execute(GameQuest quest, QuestExecuteCondition condition, params string[] paramStr)
+        {
+            var param = paramStr
+                .Where(i => !string.IsNullOrWhiteSpace(i))
+                .Select(uint.Parse)
+                .ToArray();
+
+            quest.GetOwner().AddQuestProgress(param[0], param[1]);
+
+            return true;
+        }
+    }
     public class ExecUnlockPoint : QuestExecHandler
     {
         public override bool Execute(GameQuest quest, QuestExecuteCondition condition, params string[] paramStr)

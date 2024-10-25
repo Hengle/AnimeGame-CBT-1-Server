@@ -4,6 +4,7 @@ using GenshinCBTServer.Excel;
 using GenshinCBTServer.Player;
 using Newtonsoft.Json;
 using NLua;
+using System.Resources;
 
 namespace GenshinCBTServer
 {
@@ -41,7 +42,7 @@ namespace GenshinCBTServer
             Dictionary<uint, ChapterData> chapters = JsonConvert.DeserializeObject<Dictionary<uint, ChapterData>>(File.ReadAllText("resources/ExcelOutput/ChapterExcelConfigData.json"))!;
             _resourceManager.talkData = talks.Values.ToList();
             _resourceManager.chapterData=chapters.Values.ToList();
-
+            _resourceManager.playerLevelData = JsonConvert.DeserializeObject<Dictionary<uint, PlayerLevelData>>(File.ReadAllText("resources/ExcelOutput/PlayerLevelExcelConfigData.json"))!;
             _resourceManager.rewardData = JsonConvert.DeserializeObject<List<RewardData>>(File.ReadAllText("resources/ExcelOutput/RewardExcelConfigData.json"))!;
             Server.Print($"Loaded {_resourceManager.mainQuestDict.Count} main quests");
             Server.Print($"Loaded {_resourceManager.questDict.Count} sub quests");

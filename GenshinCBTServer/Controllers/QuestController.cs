@@ -52,6 +52,7 @@ namespace GenshinCBTServer.Controllers
             }
             questManager.TriggerEvent(QuestContent.QUEST_CONTENT_COMPLETE_ANY_TALK, talkId, 0, 0);
             questManager.TriggerEvent(QuestContent.QUEST_CONTENT_COMPLETE_TALK, talkId, 0);
+            
             // questManager.Trigg(QuestCond.QUEST_COND_COMPLETE_TALK, talkId, 0);
             session.SendPacket(CmdType.NpcTalkRsp, new NpcTalkRsp() { CurTalkId=talkId,NpcEntityId=req.NpcEntityId,Retcode=0});
         }

@@ -343,19 +343,19 @@ namespace GenshinCBTServer.Player
                 {
                     skillDepotId = 504;
                 }
-                else
+                else if(id == 10000007)
                 {
                     skillDepotId = 704;
                 }
                 
-                return true;
+               
             }
             AvatarSkillDepotChangeNotify notify = new() { AvatarGuid=guid,EntityId=entityId,SkillDepotId=skillDepotId,TalentIdList = {getTalents() } };
             client.SendAllAvatars();
 
             client.SendPacket(CmdType.AvatarSkillDepotChangeNotify, notify);
-            SceneController.SwitchAvatar(client, (uint)client.selectedAvatar);
-            return false;
+            //SceneController.SwitchAvatar(client, (uint)client.selectedAvatar);
+            return true;
         }
     }
 }

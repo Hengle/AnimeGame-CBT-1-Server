@@ -33,6 +33,19 @@ namespace GenshinCBTServer
         public List<ChildDrop> childDropData = new List<ChildDrop>();
         public List<ChapterData> chapterData = new List<ChapterData>();
         public List<RewardData> rewardData = new List<RewardData>();
+        public Dictionary<uint,PlayerLevelData> playerLevelData = new ();
+
+        public PlayerLevelData GetPlayerLevel(int level)
+        {
+            if(level > 20)
+            {
+                return playerLevelData[20];
+            }
+            else
+            {
+                return playerLevelData[(uint)level];
+            }
+        }
         public class DropList
         {
             public List<GameEntity> entities = new();
