@@ -19,6 +19,7 @@
     <PackageReference Include="CsvHelper" Version="33.0.1" />
     <PackageReference Include="Google.Protobuf" Version="3.27.2" />
     <PackageReference Include="HttpServerLite" Version="2.1.5" />
+    <PackageReference Include="MongoDB.Driver" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NLua" Version="1.7.3" />
     <PackageReference Include="Pastel" Version="5.1.0" />
@@ -38,6 +39,10 @@
     <None Update="enet.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Database\" />
   </ItemGroup>
 
 </Project>

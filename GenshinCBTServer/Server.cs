@@ -53,10 +53,12 @@ namespace GenshinCBTServer
         public static Dispatch dispatch;
         public static ResourceManager resourceManager;
         public static ConfigFile config;
+
         public static SQLiteConnection GetDatabase()
         {
             return _db;
         }
+   
         public static ResourceManager getResources()
         {
             return resourceManager;
@@ -89,7 +91,7 @@ namespace GenshinCBTServer
             Print("Creating database");
             _db = new SQLiteConnection("database.db");
             _db.CreateTable<Account>();
-            _db.CreateTable<Profile>();
+           
             Print("Created database!");
 
             Print("Loading resources...");
@@ -248,7 +250,8 @@ namespace GenshinCBTServer
                     case ENet.EventType.Disconnect:
 
                         Client client_ = clients.Find(client => client.peer == netEvent.peer);
-                        Server.GetDatabase().Update(client_.ToProfile());
+                        GetDatabaseManager().SaveClient(client_);
+                        Print("Client saved");
                         clients.Remove(client_);
                         if (client_ != null)
                             Print($"Player UID {client_.uid}, Peer: {netEvent.peer} disconnected");

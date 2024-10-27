@@ -15,37 +15,16 @@ using GenshinCBTServer.Quests;
 using System.Linq;
 using Org.BouncyCastle.Ocsp;
 using System.Numerics;
+using MongoDB.Bson.Serialization.Attributes;
+using System.Reflection;
 
 namespace GenshinCBTServer
 {
-    public class Profile
-    {
-        [PrimaryKey, AutoIncrement]
-        [Column("uid")]
-        public uint uid { get; set; }
-        [Column("name")]
-        public string name { get; set; }
-        [Column("token")]
-        public string token { get; set; }
-        [Column("level")]
-        public int level { get; set; }
-        [Column("xp")]
-        public float xp { get; set; }
-        [Column("currentSceneId")]
-        public uint currentSceneId { get; set; }
-        [Column("selectedAvatar")]
-        public int selectedAvatar { get; set; }
-        [TextBlob("_team")]
-        public uint[] team { get; set; }
-        [TextBlob("_avatars")]
-        public List<Avatar> avatars { get; set; }
-        public string _avatars;
-        public string _team;
-    }
+    
 
     public class GuidRandomizer
     {
-        int v = 0;
+        public int v = 0;
         public int Next()
         {
             v++;
@@ -56,8 +35,11 @@ namespace GenshinCBTServer
     public class Client
     {
         public GuidRandomizer random = new GuidRandomizer();
+        [BsonIgnore]
         private QuestManager questManager;
+        [BsonIgnore]
         public IntPtr peer;
+        [BsonIgnore]
         public int gamePeer = 0;
         public MapField<uint, uint> openStateMap = new MapField<uint, uint>();
         public uint currentSceneId = 3;
@@ -66,15 +48,19 @@ namespace GenshinCBTServer
         public uint[] team = { 10000016, 10000015, 10000002, 10000022 };
         public uint teamEntityId;
         public int selectedAvatar = 0;
+       
         public List<Avatar> avatars = new List<Avatar>();
+        
         public List<GameItem> inventory = new List<GameItem>();
         public uint uid;
         public string name;
         public string token;
         public MotionInfo motionInfo = new MotionInfo() { Pos = new Vector() { X = 2136.926f, Y = 208, Z = -1172 }, Rot = new(), Speed = new(), State = MotionState.MotionStandby };
+        [BsonIgnore]
         public World world;
         public List<uint> unlockedPoints = new();
         public Dictionary<uint, uint> unlockedAreas = new();
+        [BsonIgnore]
         public List<uint> inRegions = new List<uint>();
 
         public int adventureLevel = 1;
@@ -227,6 +213,17 @@ namespace GenshinCBTServer
         {
             return avatars.Find(av => av.id == 10000005 || av.id == 10000007);
         }
+        public void MergeUsingReflection(Client other)
+        {
+            PropertyInfo[] properties = typeof(Client).GetProperties();
+            foreach (var property in properties)
+            {
+                if (property.CanWrite)
+                {
+                    property.SetValue(this, property.GetValue(other));
+                }
+            }
+        }
         public void InitiateAccount(string token)
         {
             world = new World(this);
@@ -237,6 +234,7 @@ namespace GenshinCBTServer
             this.uid = 1;
             this.token = token;
             name = "Traveler";
+            
             PlayerDataNotify playerDataNotify = new PlayerDataNotify()
             {
                 NickName = name,
@@ -320,31 +318,7 @@ namespace GenshinCBTServer
             SendPacket(CmdType.AllSeenMonsterNotify, allSeenMonsterNotify);
         }
 
-        //Need to be remade completely
-        public Profile ToProfile()
-        {
-            Profile profile = new Profile()
-            {
-                uid = this.uid,
-                avatars = avatars,
-                currentSceneId = currentSceneId,
-                name = name,
-                token = token,
-                team = team,
-                selectedAvatar = selectedAvatar,
-            };
-            return profile;
-        }
-
-        private void ReadProfile(Profile profile)
-        {
-            this.avatars = profile.avatars;
-            this.currentSceneId = profile.currentSceneId;
-            this.name = profile.name;
-            this.team = profile.team;
-            this.uid = profile.uid;
-            this.token = profile.token;
-        }
+       
 
         public void TeleportToScene(uint scene, Vector newPos = null, Vector newRot = null, EnterType enterType = EnterType.EnterJump)
         {

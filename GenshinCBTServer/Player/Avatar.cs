@@ -22,6 +22,8 @@ namespace GenshinCBTServer.Player
         public uint weaponId { get { return GetExcel().weaponId; } }
         public uint skillDepotId;
         Client client;
+
+       
         public AvatarData GetExcel()
         {
             return Server.getResources().GetAvatarDataById(id);
