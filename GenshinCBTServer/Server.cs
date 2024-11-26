@@ -250,7 +250,7 @@ namespace GenshinCBTServer
                     case ENet.EventType.Disconnect:
 
                         Client client_ = clients.Find(client => client.peer == netEvent.peer);
-                        GetDatabaseManager().SaveClient(client_);
+                      
                         Print("Client saved");
                         clients.Remove(client_);
                         if (client_ != null)
