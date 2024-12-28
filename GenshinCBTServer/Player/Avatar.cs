@@ -21,7 +21,7 @@ namespace GenshinCBTServer.Player
         public float curHp;
         public uint weaponId { get { return GetExcel().weaponId; } }
         public uint skillDepotId;
-        Client client;
+        YPlayer client;
 
        
         public AvatarData GetExcel()
@@ -36,7 +36,7 @@ namespace GenshinCBTServer.Player
         {
             return client.inventory.Find(item => item.guid == weaponGuid)!;
         }
-        public Avatar(Client client, uint id)
+        public Avatar(YPlayer client, uint id)
         {
             this.id = id;
             this.client = client;

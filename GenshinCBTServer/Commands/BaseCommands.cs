@@ -18,7 +18,7 @@ namespace GenshinCBTServer.Commands
             if(args.Length > 0)
             {
                 uint uid = uint.Parse(args[0]);
-                Client client = Server.clients.Find(c => c.uid == uid);
+                YPlayer client = Server.clients.Find(c => c.uid == uid);
 
                 if(client != null)
                 {
@@ -36,7 +36,7 @@ namespace GenshinCBTServer.Commands
             if (args.Length > 2)
             {
                 uint uid = uint.Parse(args[0]);
-                Client client = Server.clients.Find(c=>c.uid == uid);
+                YPlayer client = Server.clients.Find(c=>c.uid == uid);
                 if (client != null)
                 {
                     uint questId = uint.Parse(args[2]);

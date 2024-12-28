@@ -15,7 +15,7 @@ namespace GenshinCBTServer.Controllers
     public class QuestController
     {
         [Server.Handler(CmdType.NpcTalkReq)]
-        public static void OnNpcTalkReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnNpcTalkReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             NpcTalkReq req = packet.DecodeBody<NpcTalkReq>();
 
@@ -57,13 +57,13 @@ namespace GenshinCBTServer.Controllers
             session.SendPacket(CmdType.NpcTalkRsp, new NpcTalkRsp() { CurTalkId=talkId,NpcEntityId=req.NpcEntityId,Retcode=0});
         }
         [Server.Handler(CmdType.LogCutsceneNotify)]
-        public static void OnLogCutsceneNotify(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnLogCutsceneNotify(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             LogCutsceneNotify req = packet.DecodeBody<LogCutsceneNotify>();
             
         }
         [Server.Handler(CmdType.AddQuestContentProgressReq)]
-        public static void OnAddQuestContentProgressReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnAddQuestContentProgressReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             
             AddQuestContentProgressReq req = packet.DecodeBody<AddQuestContentProgressReq>();
@@ -73,7 +73,7 @@ namespace GenshinCBTServer.Controllers
             session.SendPacket(CmdType.AddQuestContentProgressRsp, new AddQuestContentProgressRsp() { ContentType = req.ContentType,Retcode=0 });
         }
         [Server.Handler(CmdType.QuestCreateEntityReq)]
-        public static void OnQuestCreateEntityReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnQuestCreateEntityReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             QuestCreateEntityReq req = packet.DecodeBody<QuestCreateEntityReq>();
             GameEntity entity = null;

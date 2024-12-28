@@ -30,7 +30,7 @@ namespace GenshinCBTServer
             {
                 this.CmdId = cmdID;
             }
-            public delegate void HandlerDelegate(Client client, int cmdId, Network.Packet packet);
+            public delegate void HandlerDelegate(YPlayer client, int cmdId, Network.Packet packet);
         }
         public class CommandAttribute : Attribute
         {
@@ -44,7 +44,7 @@ namespace GenshinCBTServer
             }
             public delegate void HandlerDelegate(string command, string[] args);
         }
-        public static List<Client> clients = new List<Client>();
+        public static List<YPlayer> clients = new List<YPlayer>();
         public static string ServerVersion = "1.0.0";
         public static bool Initialized = false;
         public IntPtr server;
@@ -148,7 +148,7 @@ namespace GenshinCBTServer
                         }
                         break;
                     case "endload":
-                        foreach (Client client in clients)
+                        foreach (YPlayer client in clients)
                         {
                             client.SendPacket((uint)CmdType.EnterSceneDoneRsp, new EnterSceneDoneRsp() { Retcode = 0 });
                         }
@@ -158,7 +158,7 @@ namespace GenshinCBTServer
                         {
                             if (args[0].ToLower() == "all")
                             {
-                                foreach (Client client in clients)
+                                foreach (YPlayer client in clients)
                                 {
                                     Print($"Position of UID {client.uid}: {client.motionInfo.Pos.X}, {client.motionInfo.Pos.Y}, {client.motionInfo.Pos.Z}");
                                 }
@@ -167,7 +167,7 @@ namespace GenshinCBTServer
                             try
                             {
                                 int uid = int.Parse(args[0]);
-                                Client client = clients.Find(c => c.uid == uid);
+                                YPlayer client = clients.Find(c => c.uid == uid);
                                 if (client != null)
                                 {
                                     Print($"Position of UID {uid}: {client.motionInfo.Pos.X}, {client.motionInfo.Pos.Y}, {client.motionInfo.Pos.Z}");
@@ -184,19 +184,19 @@ namespace GenshinCBTServer
                         }
                         break;
                     case "sendinventory":
-                        foreach (Client client in clients)
+                        foreach (YPlayer client in clients)
                         {
                             client.SendInventory();
                         }
                         break;
                     case "elfie":
-                        foreach (Client client in clients)
+                        foreach (YPlayer client in clients)
                         {
                             client.SpawnElfie();
                         }
                         break;
                     case "sendworld":
-                        foreach (Client client in clients)
+                        foreach (YPlayer client in clients)
                         {
                             client.world.SendAllEntities();
                         }
@@ -242,14 +242,14 @@ namespace GenshinCBTServer
 
                     case ENet.EventType.Connect:
                         Print("Player connected, Peer: " + netEvent.peer + ", IP: " + netEvent.peer);
-                        Client client = new Client(netEvent.peer);
+                        YPlayer client = new YPlayer(netEvent.peer);
                         clients.Add(client);
 
                         break;
 
                     case ENet.EventType.Disconnect:
 
-                        Client client_ = clients.Find(client => client.peer == netEvent.peer);
+                        YPlayer client_ = clients.Find(client => client.peer == netEvent.peer);
                       
                         Print("Client saved");
                         clients.Remove(client_);

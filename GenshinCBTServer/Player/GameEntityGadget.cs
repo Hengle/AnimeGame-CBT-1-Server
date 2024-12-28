@@ -262,7 +262,7 @@ namespace GenshinCBTServer.Player
             return info;
         }
 
-        public override bool onInteract(Client session, GadgetInteractReq req)
+        public override bool onInteract(YPlayer session, GadgetInteractReq req)
         {
             if (chest_drop > 0)
             {

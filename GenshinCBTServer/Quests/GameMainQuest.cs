@@ -25,7 +25,7 @@ namespace GenshinCBTServer.Quests
         {
             return Server.getResources().mainQuestDict[parentQuestId];
         }
-        public GameMainQuest(Client player, uint parentQuestId)
+        public GameMainQuest(YPlayer player, uint parentQuestId)
         {
             this.ownerUid = player.uid;
 
@@ -50,7 +50,7 @@ namespace GenshinCBTServer.Quests
                 childQuests.Add(quest);
             }
         }
-        public Client GetOwner()
+        public YPlayer GetOwner()
         {
             return Server.clients.Find(c => c.uid == ownerUid);
         }

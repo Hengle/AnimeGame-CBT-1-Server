@@ -22,7 +22,7 @@ namespace GenshinCBTServer.Quests
 {
     public class QuestManager
     {
-        private Client client;
+        private YPlayer client;
 
         public List<GameMainQuest> mainQuests = new();
         public List<uint> finishedList = new();
@@ -30,7 +30,7 @@ namespace GenshinCBTServer.Quests
         public Dictionary<QuestExec, QuestExecHandler> execHandlers = new();
 
 
-        public QuestManager(Client client)
+        public QuestManager(YPlayer client)
         {
             this.client = client;
             //TODO LOAD QUESTS
@@ -180,7 +180,7 @@ namespace GenshinCBTServer.Quests
             }
             
         }
-        public bool TriggerCondition(Client owner, QuestData questData, QuestCondition e, string paramStr, params uint[] parameters)
+        public bool TriggerCondition(YPlayer owner, QuestData questData, QuestCondition e, string paramStr, params uint[] parameters)
         {
             return true;
         }

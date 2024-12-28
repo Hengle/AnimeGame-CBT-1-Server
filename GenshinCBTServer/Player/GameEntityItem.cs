@@ -91,7 +91,7 @@ namespace GenshinCBTServer.Player
             // if (chest_drop > 0) info.Gadget.GadgetType = 1;
             return info;
         }
-        public override bool onInteract(Client session, GadgetInteractReq req)
+        public override bool onInteract(YPlayer session, GadgetInteractReq req)
         {
             session.world.KillEntities(new List<GameEntity>() { this }, VisionType.VisionNone);
             session.AddItem(item);

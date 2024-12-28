@@ -1,4 +1,5 @@
 ﻿using GenshinCBTServer.Excel;
+using GenshinCBTServer.Network.Send;
 using GenshinCBTServer.Player;
 using GenshinCBTServer.Protocol;
 using System;
@@ -13,24 +14,9 @@ namespace GenshinCBTServer.Controllers
 {
     public class LoginController
     {
-        [Server.Handler(CmdType.GetPlayerTokenReq)]
-        public static void OnGetPlayerTokenReq(Client session, CmdType cmdId, Network.Packet packet)
-        {
-            GetPlayerTokenReq req = packet.DecodeBody<GetPlayerTokenReq>();
-            GetPlayerTokenRsp resp = new GetPlayerTokenRsp()
-            {
-                AccountUid = "1",
-                AccountType = 0,
-                Token = req.AccountToken,
-                Retcode = 0,
-                Uid = 1,
-                Msg = "Funziona",
-            };
 
-            session.SendPacket((uint)CmdType.GetPlayerTokenRsp, resp);
-        }
         [Server.Handler(CmdType.SetPlayerBornDataReq)]
-        public static void OnSetPlayerBornDataReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnSetPlayerBornDataReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             SetPlayerBornDataReq req = packet.DecodeBody<SetPlayerBornDataReq>();
             session.name = req.NickName;
@@ -57,35 +43,9 @@ namespace GenshinCBTServer.Controllers
             session.SendInventory();
             session.SendAllAvatars();
         }
-        [Server.Handler(CmdType.PlayerLoginReq)]
-        public static void OnPlayerLoginReq(Client session, CmdType cmdId, Network.Packet packet)
-        {
-
-            PlayerLoginReq req = packet.DecodeBody<PlayerLoginReq>();
-            session.InitiateAccount(req.Token);
-            PlayerLoginRsp resp = new PlayerLoginRsp()
-            {
-                DataVersion = 138541,
-                ResVersion = 138541,
-                TargetUid = session.uid,
-                Retcode = 0,
-            };
-            if (session.avatars.Count < 1)
-            {
-                DoSetPlayerBornDataNotify start = new()
-                {
-
-                };
-                session.SendPacket((uint)CmdType.DoSetPlayerBornDataNotify, start);
-            }
-            else
-            {
-                session.TeleportToScene(3);
-            }
-            session.SendPacket((uint)CmdType.PlayerLoginRsp, resp);
-        }
+        
         [Server.Handler(CmdType.PingReq)]
-        public static void OnPingReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnPingReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
 
             PingReq req = packet.DecodeBody<PingReq>();

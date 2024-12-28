@@ -9,7 +9,7 @@ namespace GenshinCBTServer.Player
     {
         public int sceneTime;
         public uint sceneId;
-        public Client client;
+        public YPlayer client;
         public uint monsterDieCount = 0;
 
         public List<GameEntity> entities = new List<GameEntity>();
@@ -18,7 +18,7 @@ namespace GenshinCBTServer.Player
         public List<SceneBlock> loadedBlocks = new List<SceneBlock>();
         public SceneExcel excel;
         public SceneBlock currentBlock;
-        public World(Client client)
+        public World(YPlayer client)
         {
             this.client = client;
         }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -19,13 +20,19 @@ namespace GenshinCBTServer.Network
     {
         public uint cmdId;
         public byte[] finishedBody;
+        public IMessage ori;
         public static void PutUInt16(byte[] buf, ushort value, int offset)
         {
             ushort networkValue = (ushort)IPAddress.HostToNetworkOrder((short)value);
             byte[] bytes = BitConverter.GetBytes(networkValue);
             Buffer.BlockCopy(bytes, 0, buf, offset, bytes.Length);
         }
-       
+        public void SetData(CmdType cmdType, IMessage msg)
+        {
+            cmdId = (uint)cmdType;
+            finishedBody = msg.ToByteArray();
+            ori = msg;
+        }
         public static void PutUInt32(byte[] buf, uint value, int offset)
         {
             uint networkValue = (uint)IPAddress.HostToNetworkOrder((int)value);
@@ -81,6 +88,11 @@ namespace GenshinCBTServer.Network
             Marshal.Copy(data, 0, ptr, data.Length);
 
             return ptr;
+        }
+        //Not used
+        public static IntPtr EncodePacket(Packet packet)
+        {
+            return EncodePacket((ushort)packet.cmdId, packet.ori);
         }
         public static IntPtr EncodePacket(ushort cmdId, IMessage body)
         {

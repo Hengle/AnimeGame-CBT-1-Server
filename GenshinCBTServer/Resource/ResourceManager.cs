@@ -54,7 +54,7 @@ namespace GenshinCBTServer
         {
             return rewardData.FindAll(r=>r.rewardId == id);
         }
-        public DropList GetRandomDrops(Client session, uint id, MotionInfo motion)
+        public DropList GetRandomDrops(YPlayer session, uint id, MotionInfo motion)
         {
             DropList dropList = new DropList();
             DropData data = dropData.Find(d => d.drop_id == id)!;

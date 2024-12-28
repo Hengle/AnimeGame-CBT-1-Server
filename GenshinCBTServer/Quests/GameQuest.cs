@@ -39,7 +39,7 @@ namespace GenshinCBTServer.Quests
             finishProgressList = new uint[data.finishCond.Count];
             this.ownerUid = ownerUid;
         }
-        public Client GetOwner()
+        public YPlayer GetOwner()
         {
             return Server.clients.Find(c => c.uid == ownerUid);
         }

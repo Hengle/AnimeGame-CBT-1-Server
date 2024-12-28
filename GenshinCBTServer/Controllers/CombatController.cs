@@ -10,7 +10,7 @@ namespace GenshinCBTServer.Controllers
         // those are hardcoded ids of gadgets that are marked as invincible but they shouldn't be
         public static List<uint> blackList = new() { 70220008, 70220021, 70220013, 70220014 }; // don't worry, it's temporary until we implement ability manager
         [Server.Handler(CmdType.AvatarDieAnimationEndReq)]
-        public static void OnAvatarDieAnimationEndReq(Client session, CmdType cmdId, Packet packet)
+        public static void OnAvatarDieAnimationEndReq(YPlayer session, CmdType cmdId, Packet packet)
         {
             AvatarDieAnimationEndReq req = packet.DecodeBody<AvatarDieAnimationEndReq>();
             bool switched = false;
@@ -45,7 +45,7 @@ namespace GenshinCBTServer.Controllers
             session.SendPacket((uint)CmdType.AvatarDieAnimationEndRsp, rsp);
         }
         [Server.Handler(CmdType.EvtBeingHitNotify)]
-        public static void OnEvtBeingHitNotify(Client session, CmdType cmdId, Packet packet)
+        public static void OnEvtBeingHitNotify(YPlayer session, CmdType cmdId, Packet packet)
         {
 
             EvtBeingHitNotify req = packet.DecodeBody<EvtBeingHitNotify>();
@@ -136,7 +136,7 @@ namespace GenshinCBTServer.Controllers
             }
         }
 
-        private static float GetDamage(Client session, AttackResult attackResult)
+        private static float GetDamage(YPlayer session, AttackResult attackResult)
         {
             float dmg = 0;
             Avatar avatar = session.avatars.Find(av => av.entityId == attackResult.AttackerId);

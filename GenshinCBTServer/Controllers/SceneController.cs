@@ -10,7 +10,7 @@ namespace GenshinCBTServer.Controllers
     public class SceneController
     {
         [Server.Handler(CmdType.WorldPlayerReviveReq)]
-        public static void OnWorldPlayerReviveReq(Client session, CmdType cmdId, Packet packet)
+        public static void OnWorldPlayerReviveReq(YPlayer session, CmdType cmdId, Packet packet)
         {
             WorldPlayerReviveReq req = packet.DecodeBody<WorldPlayerReviveReq>();
 
@@ -29,7 +29,7 @@ namespace GenshinCBTServer.Controllers
             session.TeleportToScene(session.currentSceneId, point.tranPos, point.tranRot, EnterType.EnterGoto);
         }
         [Server.Handler(CmdType.ClientScriptEventNotify)]
-        public static void OnClientScriptEventNotify(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnClientScriptEventNotify(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.MonsterAlertChangeNotify)]
-        public static void OnMonsterAlertChangeNotify(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnMonsterAlertChangeNotify(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             MonsterAlertChangeNotify req = packet.DecodeBody<MonsterAlertChangeNotify>();
             foreach (GameEntity entity in session.world.entities.FindAll(e => req.MonsterEntityList.Contains(e.entityId)))
@@ -86,7 +86,7 @@ namespace GenshinCBTServer.Controllers
             }
         }
         [Server.Handler(CmdType.ExecuteGadgetLuaReq)]
-        public static void OnExecuteGadgetLuaReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnExecuteGadgetLuaReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             ExecuteGadgetLuaReq req = packet.DecodeBody<ExecuteGadgetLuaReq>();
             GameEntity entity = session.world.entities.Find(e => e.entityId == req.SourceEntityId);
@@ -101,12 +101,12 @@ namespace GenshinCBTServer.Controllers
             }
         }
         [Server.Handler(CmdType.SceneEntityDrownReq)]
-        public static void OnSceneEntityDrownReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnSceneEntityDrownReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             SceneEntityDrownReq req = packet.DecodeBody<SceneEntityDrownReq>();
         }
         [Server.Handler(CmdType.PersonalSceneJumpReq)]
-        public static void OnPersonalSceneJumpReq(Client session, CmdType cmdId, Packet packet)
+        public static void OnPersonalSceneJumpReq(YPlayer session, CmdType cmdId, Packet packet)
         {
             PersonalSceneJumpReq req = packet.DecodeBody<PersonalSceneJumpReq>();
             ScenePointRow pointRow = Server.getResources().scenePointDict[session.currentSceneId];
@@ -124,7 +124,7 @@ namespace GenshinCBTServer.Controllers
             }
         }
         [Server.Handler(CmdType.UnlockTransPointReq)]
-        public static void OnUnlockTransPointReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnUnlockTransPointReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             UnlockTransPointReq req = packet.DecodeBody<UnlockTransPointReq>();
            
@@ -134,7 +134,7 @@ namespace GenshinCBTServer.Controllers
             session.SendPacket((uint)CmdType.UnlockTransPointRsp, rsp_);
         }
         [Server.Handler(CmdType.EnterSceneReadyReq)]
-        public static void OnEnterSceneReadyReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnEnterSceneReadyReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             EnterSceneReadyReq req = packet.DecodeBody<EnterSceneReadyReq>();
             EnterScenePeerNotify enterscenepeernotify = new EnterScenePeerNotify()
@@ -150,7 +150,7 @@ namespace GenshinCBTServer.Controllers
 
 
         [Server.Handler(CmdType.SceneEntityMoveReq)]
-        public static void OnSceneEntityMoveReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnSceneEntityMoveReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             SceneEntityMoveReq req = packet.DecodeBody<SceneEntityMoveReq>();
 
@@ -180,7 +180,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.ChangeAvatarReq)]
-        public static void OnChangeAvatarReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnChangeAvatarReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
 
             ChangeAvatarReq req = packet.DecodeBody<ChangeAvatarReq>();
@@ -190,7 +190,7 @@ namespace GenshinCBTServer.Controllers
 
         }
         [Server.Handler(CmdType.GadgetInteractReq)]
-        public static void OnGadgetInteractReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnGadgetInteractReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
 
             GadgetInteractReq req = packet.DecodeBody<GadgetInteractReq>();
@@ -250,7 +250,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.SceneTransToPointReq)]
-        public static void OnSceneTransToPointReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnSceneTransToPointReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             SceneTransToPointReq req = packet.DecodeBody<SceneTransToPointReq>();
             ScenePointRow pointRow = Server.getResources().scenePointDict[3];
@@ -305,7 +305,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.EnterSceneDoneReq)]
-        public static void OnEnterSceneDoneReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnEnterSceneDoneReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             EnterSceneDoneReq req = packet.DecodeBody<EnterSceneDoneReq>();
 
@@ -327,7 +327,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.PlayerSetPauseReq)]
-        public static void OnPlayerSetPauseReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnPlayerSetPauseReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             // later should implement the pause on server side (for specific props, countdowns etc)
             PlayerSetPauseReq req = packet.DecodeBody<PlayerSetPauseReq>();
@@ -336,7 +336,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.EvtDestroyGadgetNotify)]
-        public static void OnEvtDestroyGadgetNotify(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnEvtDestroyGadgetNotify(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             EvtDestroyGadgetNotify req = packet.DecodeBody<EvtDestroyGadgetNotify>();
             GameEntity? entity = session.world.entities.Find(entity => entity.entityId == req.EntityId);
@@ -347,13 +347,13 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.EvtCreateGadgetNotify)]
-        public static void OnEvtCreateGadgetNotify(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnEvtCreateGadgetNotify(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             EvtCreateGadgetNotify req = packet.DecodeBody<EvtCreateGadgetNotify>();
         }
 
         [Server.Handler(CmdType.SetOpenStateReq)]
-        public static void OnSetOpenStateReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnSetOpenStateReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
 
             SetOpenStateReq req = packet.DecodeBody<SetOpenStateReq>();
@@ -363,7 +363,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.EnterWorldAreaReq)]
-        public static void OnEnterWorldAreaReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnEnterWorldAreaReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
 
             EnterWorldAreaReq req = packet.DecodeBody<EnterWorldAreaReq>();
@@ -373,7 +373,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.SceneGetAreaExplorePercentReq)]
-        public static void OnSceneGetAreaExplorePercentReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnSceneGetAreaExplorePercentReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
 
             SceneGetAreaExplorePercentReq req = packet.DecodeBody<SceneGetAreaExplorePercentReq>();
@@ -383,7 +383,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.GetScenePointReq)]
-        public static void OnGetScenePointReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnGetScenePointReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             GetScenePointReq req = packet.DecodeBody<GetScenePointReq>();
             GetScenePointRsp rsp = new GetScenePointRsp()
@@ -402,7 +402,7 @@ namespace GenshinCBTServer.Controllers
             session.SendPacket((uint)CmdType.GetScenePointRsp, rsp);
         }
         [Server.Handler(CmdType.GetSceneAreaReq)]
-        public static void OnGetSceneAreaReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnGetSceneAreaReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             GetSceneAreaReq req = packet.DecodeBody<GetSceneAreaReq>();
             GetSceneAreaRsp rsp = new GetSceneAreaRsp()
@@ -421,7 +421,7 @@ namespace GenshinCBTServer.Controllers
             session.SendPacket((uint)CmdType.GetSceneAreaRsp, rsp);
         }
         [Server.Handler(CmdType.SceneInitFinishReq)]
-        public static void OnSceneInitFinishReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnSceneInitFinishReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
 
             SceneInitFinishReq req = packet.DecodeBody<SceneInitFinishReq>();
@@ -463,7 +463,7 @@ namespace GenshinCBTServer.Controllers
 
         }
         [Server.Handler(CmdType.SetUpAvatarTeamReq)]
-        public static void OnSetUpAvatarTeamReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnSetUpAvatarTeamReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             SetUpAvatarTeamReq req = packet.DecodeBody<SetUpAvatarTeamReq>();
 
@@ -480,7 +480,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.GetCompoundDataReq)]
-        public static void OnGetCompoundDataReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnGetCompoundDataReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             GetCompoundDataRsp rsp = new GetCompoundDataRsp();
             foreach (CompoundExcel compound in Server.getResources().compoundDict.Values)
@@ -491,7 +491,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.PlayerCookReq)]
-        public static void OnPlayerCookReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnPlayerCookReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             PlayerCookReq req = packet.DecodeBody<PlayerCookReq>();
             CookRecipeExcel excel = Server.getResources().cookRecipeDict[req.RecipeId];
@@ -514,7 +514,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.PlayerCompoundMaterialReq)]
-        public static void OnPlayerCompoundMaterialReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnPlayerCompoundMaterialReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             PlayerCompoundMaterialReq req = packet.DecodeBody<PlayerCompoundMaterialReq>();
             CompoundExcel compound = Server.getResources().compoundDict[req.CompoundId];
@@ -537,7 +537,7 @@ namespace GenshinCBTServer.Controllers
             session.SendPacket((uint)CmdType.CompoundDataNotify, ntf);
         }
 
-        public static void SendSceneTeamUpdate(Client session)
+        public static void SendSceneTeamUpdate(YPlayer session)
         {
 
             AvatarTeamUpdateNotify sceneTeamUpdate = new();
@@ -563,7 +563,7 @@ namespace GenshinCBTServer.Controllers
             session.SendPacket((uint)CmdType.SetUpAvatarTeamRsp, setUpAvatarTeamRsp);
         }
 
-        public static void SwitchAvatar(Client session, uint guid)
+        public static void SwitchAvatar(YPlayer session, uint guid)
         {
             Avatar prevAv = session.avatars.Find(av => av.guid == session.GetCurrentAvatar());
             session.selectedAvatar = (int)guid;
@@ -583,7 +583,7 @@ namespace GenshinCBTServer.Controllers
             session.SendPacket(CmdType.SceneEntityAppearNotify, appearNotify);
         }
 
-        public static void SendEnterSceneInfo(Client session)
+        public static void SendEnterSceneInfo(YPlayer session)
         {
             PlayerEnterSceneInfoNotify playerEnterSceneInfoNotify = new()
             {

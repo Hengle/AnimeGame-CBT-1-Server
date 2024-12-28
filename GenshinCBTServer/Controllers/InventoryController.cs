@@ -15,14 +15,14 @@ namespace GenshinCBTServer.Controllers
     {
 
         [Server.Handler(CmdType.GetAllMailReq)]
-        public static void OnGetAllMailReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnGetAllMailReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             GetAllMailReq req = packet.DecodeBody<GetAllMailReq>();
             session.SendPacket((uint)CmdType.GetAllMailRsp, new GetAllMailRsp() { MailList = { new MailData() { MailId = 0, MailTextContent = new() { Content = "Server creato da Akari", Sender = "AkariLeaksITA", Title = "Server CBT 1" }, SendTime = 0 } } });
         }
 
         [Server.Handler(CmdType.WearEquipReq)]
-        public static void OnWearEquipReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnWearEquipReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
 
             WearEquipReq req = packet.DecodeBody<WearEquipReq>();

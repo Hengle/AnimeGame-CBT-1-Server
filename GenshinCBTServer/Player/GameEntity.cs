@@ -30,7 +30,7 @@ namespace GenshinCBTServer.Player
             this.motionInfo = motionInfo;
         }
 
-        public GameEntity(Client client,CreateEntityInfo entity)
+        public GameEntity(YPlayer client,CreateEntityInfo entity)
         {
             if(entity.EntityCase== CreateEntityInfo.EntityOneofCase.NpcId)
             {
@@ -53,7 +53,7 @@ namespace GenshinCBTServer.Player
         public bool died = false;
         public void Die()
         {
-            Client client = GetClientOwner();
+            YPlayer client = GetClientOwner();
             if (!died)
             {
                
@@ -65,7 +65,7 @@ namespace GenshinCBTServer.Player
             }
             
         }
-        public virtual bool onInteract(Client session, GadgetInteractReq req)
+        public virtual bool onInteract(YPlayer session, GadgetInteractReq req)
         {
 
             return false;
@@ -76,7 +76,7 @@ namespace GenshinCBTServer.Player
         }
         private void dieStart()
         {
-            Client client = GetClientOwner();
+            YPlayer client = GetClientOwner();
             SendUpdatedProps();
             /*
             EvtEntityStartDieEndNotify evtEntityStartDieEndNotify = new EvtEntityStartDieEndNotify()
@@ -146,13 +146,13 @@ namespace GenshinCBTServer.Player
 
         }
         //TODO get all clients in a world (for future multiplayer)
-        public Client GetClientOwner()
+        public YPlayer GetClientOwner()
         {
             return Server.clients.Find(client => client.gamePeer == owner);
         }
         public void SendUpdatedProps()
         {
-            Client client = GetClientOwner();
+            YPlayer client = GetClientOwner();
             //UpdateProps();
             client.SendPacket((uint)CmdType.EntityFightPropUpdateNotify, new EntityFightPropUpdateNotify()
             {

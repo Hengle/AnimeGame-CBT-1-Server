@@ -32,7 +32,7 @@ namespace GenshinCBTServer
         }
     }
 
-    public class Client
+    public class YPlayer
     {
         public GuidRandomizer random = new GuidRandomizer();
         [BsonIgnore]
@@ -213,9 +213,9 @@ namespace GenshinCBTServer
         {
             return avatars.Find(av => av.id == 10000005 || av.id == 10000007);
         }
-        public void MergeUsingReflection(Client other)
+        public void MergeUsingReflection(YPlayer other)
         {
-            PropertyInfo[] properties = typeof(Client).GetProperties();
+            PropertyInfo[] properties = typeof(YPlayer).GetProperties();
             foreach (var property in properties)
             {
                 if (property.CanWrite)
@@ -373,6 +373,10 @@ namespace GenshinCBTServer
         {
 
         }
+        public void SendPacket(Packet packet)
+        {
+            SendPacket((uint)packet.cmdId, packet.ori);
+        }
         public void SendPacket(CmdType cmdId, IMessage protoMessage)
         {
             SendPacket((uint)cmdId, protoMessage);
@@ -454,7 +458,7 @@ namespace GenshinCBTServer
             GetQuestManager().TriggerEvent(QuestContent.QUEST_CONTENT_ADD_QUEST_PROGRESS, id, newCount);
         }
 
-        public Client(IntPtr iD)
+        public YPlayer(IntPtr iD)
         {
             this.peer = iD;
             // this.gamePeer = (int)peer;

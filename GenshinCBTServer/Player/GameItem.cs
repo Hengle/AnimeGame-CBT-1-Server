@@ -47,7 +47,7 @@ namespace GenshinCBTServer.Player
         {
             return Server.getResources().itemData[id];
         }
-        public GameItem(Client client, uint id)
+        public GameItem(YPlayer client, uint id)
         {
             this.id = id;
             this.amount = 1;

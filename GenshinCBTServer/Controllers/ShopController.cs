@@ -8,7 +8,7 @@ namespace GenshinCBTServer.Controllers
     {
        
         [Server.Handler(CmdType.GetShopReq)]
-        public static void OnGetShopReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnGetShopReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             GetShopReq req = packet.DecodeBody<GetShopReq>();
             Shop shop = new Shop() { ShopType = req.ShopType };
@@ -48,7 +48,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.BuyGoodsReq)]
-        public static void OnBuyGoodsReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnBuyGoodsReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             BuyGoodsReq req = packet.DecodeBody<BuyGoodsReq>();
             // TODO: Implement paying for goods and adding them to the player's inventory

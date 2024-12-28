@@ -7,7 +7,7 @@ namespace GenshinCBTServer.Controllers
     public class DungeonController
     {
         [Server.Handler(CmdType.DungeonEntryInfoReq)]
-        public static void OnDungeonEntryInfoReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnDungeonEntryInfoReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             DungeonEntryInfoReq req = packet.DecodeBody<DungeonEntryInfoReq>();
 
@@ -36,7 +36,7 @@ namespace GenshinCBTServer.Controllers
             WE STILL DONT WANT TO IMPLEMENT THIS, SINCE WE WILL NEED TO MAKE A TEMPORARY DUNGEON LINEUP AND SAVE PREVIOUS POS AND SCENE ID  
         */
         [Server.Handler(CmdType.PlayerEnterDungeonReq)]
-        public static void OnPlayerEnterDungeonReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnPlayerEnterDungeonReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             PlayerEnterDungeonReq req = packet.DecodeBody<PlayerEnterDungeonReq>();
             PlayerEnterDungeonRsp rsp = new PlayerEnterDungeonRsp()
@@ -61,7 +61,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         [Server.Handler(CmdType.PlayerQuitDungeonReq)]
-        public static void OnPlayerQuitDungeonReq(Client session, CmdType cmdId, Network.Packet packet)
+        public static void OnPlayerQuitDungeonReq(YPlayer session, CmdType cmdId, Network.Packet packet)
         {
             PlayerQuitDungeonReq req = packet.DecodeBody<PlayerQuitDungeonReq>();
             PlayerQuitDungeonRsp rsp = new PlayerQuitDungeonRsp()

@@ -53,13 +53,13 @@ namespace GenshinCBTServer.Controllers
     public class ScriptLib
     {
         public int currentGroupId;
-        public Client curClient;
+        public YPlayer curClient;
 
         public void PrintLog(string msg)
         {
             Server.Print($"[LUA] {msg}");
         }
-        public int GetGroupMonsterCount(Client client)
+        public int GetGroupMonsterCount(YPlayer client)
         {
             return client.world.entities.FindAll(e => e.groupId == currentGroupId && e is GameEntityMonster).Count;
         }
@@ -72,11 +72,11 @@ namespace GenshinCBTServer.Controllers
             }
             return 0;
         }
-        public int GetGroupMonsterCountByGroupId(Client client, int groupId)
+        public int GetGroupMonsterCountByGroupId(YPlayer client, int groupId)
         {
             return client.world.entities.FindAll(e => e.groupId == groupId && e is GameEntityMonster).Count;
         }
-        public int GetQuestState(Client client, int target_eid, int questId)
+        public int GetQuestState(YPlayer client, int target_eid, int questId)
         {
             GameQuest quest = client.GetQuestManager().GetQuestById((uint)questId);
 
@@ -86,7 +86,7 @@ namespace GenshinCBTServer.Controllers
             }
             return (int)quest.state;
         }
-        public int ShowReminder(Client client, int reminderId)
+        public int ShowReminder(YPlayer client, int reminderId)
         {
             DungeonShowReminderNotify ntf = new DungeonShowReminderNotify()
             {
@@ -96,7 +96,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.StartPlatform(context, 28)
-        public int StartPlatform(Client client, int configId)
+        public int StartPlatform(YPlayer client, int configId)
         {
             GameEntity entity = client.world.entities.Find(e => e.configId == configId);
             if (entity == null) return 1;
@@ -114,7 +114,7 @@ namespace GenshinCBTServer.Controllers
             return platform.StartPlatform() ? 0 : 2;
         }
         // ScriptLib.StopPlatform(context, 172)
-        public int StopPlatform(Client client, int configId)
+        public int StopPlatform(YPlayer client, int configId)
         {
             /*   GameEntity entity = client.world.entities.Find(e => e.configId == configId);
                if (entity == null) return 1;
@@ -131,7 +131,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.SetPlatformRouteId(context, 87, 20000009)
-        public int SetPlatformRouteId(Client client, int configId, int routeId)
+        public int SetPlatformRouteId(YPlayer client, int configId, int routeId)
         {
             GameEntity entity = client.world.entities.Find(e => e.configId == configId);
             Server.Print($"[LUA] Call SetPlatformRouteId with {configId}, entity is {(entity != null ? "not null" : "null")}");
@@ -179,7 +179,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.CreateGadget(context, { config_id = 1405 })
-        public int CreateGadget(Client client, LuaTable parameters)
+        public int CreateGadget(YPlayer client, LuaTable parameters)
         {
             int configId = (int)(long)parameters["config_id"];
             uint entityId = ((uint)ProtEntityType.ProtEntityGadget << 24) + (uint)client.random.Next();
@@ -198,7 +198,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.PlayCutScene(context, 200201, 60)
-        public int PlayCutScene(Client client, int cutSceneId, int var2)
+        public int PlayCutScene(YPlayer client, int cutSceneId, int var2)
         {
             CutSceneBeginNotify ntf = new CutSceneBeginNotify()
             {
@@ -208,7 +208,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.KillEntityByConfigId(context, { config_id = 2603 })
-        public int KillEntityByConfigId(Client client, LuaTable parameters)
+        public int KillEntityByConfigId(YPlayer client, LuaTable parameters)
         {
             int configId = (int)(long)parameters["config_id"];
             GameEntity entity = client.world.entities.Find(e => e.configId == configId);
@@ -217,7 +217,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.RefreshGroup(context, { group_id = 201011003, suite = 3 })
-        public int RefreshGroup(Client client, LuaTable parameters)
+        public int RefreshGroup(YPlayer client, LuaTable parameters)
         {
             int groupId = (int)(long)parameters["group_id"];
             int suite = (int)(long)parameters["suite"];
@@ -227,7 +227,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.UnlockForce(context, 2)
-        public int UnlockForce(Client client, int sceneId)
+        public int UnlockForce(YPlayer client, int sceneId)
         {
             SceneForceUnlockNotify ntf = new SceneForceUnlockNotify()
             {
@@ -238,7 +238,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.LockForce(context, 2)
-        public int LockForce(Client client, int sceneId)
+        public int LockForce(YPlayer client, int sceneId)
         {
             SceneForceLockNotify ntf = new SceneForceLockNotify()
             {
@@ -248,12 +248,12 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         //ScriptLib.GetMonsterDieCount(context)
-        public int GetMonsterDieCount(Client client)
+        public int GetMonsterDieCount(YPlayer client)
         {
             return (int)client.world.monsterDieCount;
         }
         // ScriptLib.UnlockMonsterHp(context, 15)
-        public int UnlockMonsterHp(Client client, int configId)
+        public int UnlockMonsterHp(YPlayer client, int configId)
         {
             GameEntity entity = client.world.entities.Find(e => e.configId == configId);
             if (entity == null) return 1;
@@ -263,7 +263,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.LockMonsterHp(context, 15)
-        public int LockMonsterHp(Client client, int configId)
+        public int LockMonsterHp(YPlayer client, int configId)
         {
             GameEntity entity = client.world.entities.Find(e => e.configId == configId);
             if (entity == null) return 1;
@@ -273,7 +273,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.CheckRemainGadgetCountByGroupId(context, {group_id = 133003196})
-        public int CheckRemainGadgetCountByGroupId(Client client, LuaTable parameters)
+        public int CheckRemainGadgetCountByGroupId(YPlayer client, LuaTable parameters)
         {
             int groupId = (int)(long)parameters["group_id"];
             SceneGroup group = client.world.currentBlock.groups.Find(g => g.id == groupId);
@@ -289,7 +289,7 @@ namespace GenshinCBTServer.Controllers
             return count;
         }
         // ScriptLib.UnlockScenePoint(context, 40)
-        public int UnlockScenePoint(Client client, int scenePointId)
+        public int UnlockScenePoint(YPlayer client, int scenePointId)
         {
             ScenePointUnlockNotify ntf = new ScenePointUnlockNotify()
             {
@@ -302,7 +302,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         // ScriptLib.SetMonsterAIByGroup(context, 0, 26, 220011001)
-        public int SetMonsterAIByGroup(Client client, int is_enable, int configId, int group_id)
+        public int SetMonsterAIByGroup(YPlayer client, int is_enable, int configId, int group_id)
         {
             GameEntity entity = client.world.entities.Find(e => e.configId == configId && e.groupId == group_id);
             if (entity == null) return 1;
@@ -312,12 +312,12 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.GetContextGroupId(context)
-        public int GetContextGroupId(Client client)
+        public int GetContextGroupId(YPlayer client)
         {
             return currentGroupId;
         }
         // ScriptLib.ScenePlaySound(context, {play_pos = pos, sound_name = "DungeonSound1001", play_type= 2, is_broadcast = false })
-        public int ScenePlaySound(Client client, LuaTable parameters)
+        public int ScenePlaySound(YPlayer client, LuaTable parameters)
         {
 
             ScenePlayerSoundNotify ntf = new ScenePlayerSoundNotify()
@@ -329,7 +329,7 @@ namespace GenshinCBTServer.Controllers
             client.SendPacket((uint)CmdType.ScenePlayerSoundNotify, ntf);
             return 0;
         }
-        public int ChangeGroupGadget(Client client, LuaTable parameters)
+        public int ChangeGroupGadget(YPlayer client, LuaTable parameters)
         {
             int configId = (int)(long)parameters["config_id"];
             GadgetState state = (GadgetState)(int)(long)parameters["state"];
@@ -350,7 +350,7 @@ namespace GenshinCBTServer.Controllers
         }
 
         // ScriptLib.BeginCameraSceneLook(context, { look_pos = pos, duration = 2, is_force = true, is_broadcast = false })
-        public int BeginCameraSceneLook(Client client, LuaTable parameters)
+        public int BeginCameraSceneLook(YPlayer client, LuaTable parameters)
         {
             LuaTable lookPos = (LuaTable)parameters["look_pos"];
             float x = (float)(double)Convert.ToDouble(lookPos["x"]);
@@ -375,7 +375,7 @@ namespace GenshinCBTServer.Controllers
             // client.SendPacket((uint)CmdType.BeginCameraSceneLookNotify, ntf);
             return 1;
         }
-        public int SetGadgetStateByConfigId(Client client, int configId, int gadgetState)
+        public int SetGadgetStateByConfigId(YPlayer client, int configId, int gadgetState)
         {
             Server.Print($"[LUA] SetGadgetStateByConfigId with {configId},{gadgetState}");
             GameEntity entity = client.world.entities.Find(e => e.configId == configId && e.groupId == currentGroupId);
@@ -390,7 +390,7 @@ namespace GenshinCBTServer.Controllers
 
         }
 
-        public int SetGroupGadgetStateByConfigId(Client client, int groupId, int configId, int gadgetState)
+        public int SetGroupGadgetStateByConfigId(YPlayer client, int groupId, int configId, int gadgetState)
         {
             Server.Print($"[LUA] CallSetGroupGadgetStateByConfigId with {configId},{gadgetState}");
             GameEntity entity = client.world.entities.Find(e => e.configId == configId && e.groupId == groupId);
@@ -405,7 +405,7 @@ namespace GenshinCBTServer.Controllers
 
         }
         // ScriptLib.ChangeGroupVariableValue(context, "var_MONSTER_NUM", -1)
-        public int ChangeGroupVariableValue(Client client, string variable, int value)
+        public int ChangeGroupVariableValue(YPlayer client, string variable, int value)
         {
             Server.Print($"[LUA] Call ChangeGroupVariableValue with {variable},{value}");
             SceneGroup group = client.world.currentBlock.groups.Find(g => g.id == currentGroupId);
@@ -420,7 +420,7 @@ namespace GenshinCBTServer.Controllers
             }
             return 1;
         }
-        public int SetGroupVariableValue(Client client, string variable, int value)
+        public int SetGroupVariableValue(YPlayer client, string variable, int value)
         {
 
             SceneGroup group = client.world.currentBlock.groups.Find(g => g.id == currentGroupId);
@@ -439,7 +439,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.GetGroupVariableValue(context, "var_MONSTER_NUM")
-        public int GetGroupVariableValue(Client client, string variable)
+        public int GetGroupVariableValue(YPlayer client, string variable)
         {
 
             SceneGroup group = client.world.currentBlock.groups.Find(g => g.id == currentGroupId);
@@ -455,7 +455,7 @@ namespace GenshinCBTServer.Controllers
             return 0;
         }
         // ScriptLib.CreateVariable(context, "int", 3)
-        public int CreateVariable(Client client, string variable, int value)
+        public int CreateVariable(YPlayer client, string variable, int value)
         {
             Server.Print($"[LUA] Call CreateVariable with {variable},{value}");
             Variable var = new Variable()
@@ -468,7 +468,7 @@ namespace GenshinCBTServer.Controllers
             group.variables.Add(var);
             return 0;
         }
-        public int KillGroupEntity(Client client, LuaTable table)
+        public int KillGroupEntity(YPlayer client, LuaTable table)
         {
             uint groupId = (uint)(long)table["group_id"];
             int[] gadgets = (table["gadgets"] as LuaTable).ToIntArray();
@@ -477,7 +477,7 @@ namespace GenshinCBTServer.Controllers
             client.world.KillEntities(entities);
             return 1;
         }
-        public int GetRegionEntityCount(Client client, LuaTable table)
+        public int GetRegionEntityCount(YPlayer client, LuaTable table)
         {
             // logger.debug("[LUA] Call GetRegionEntityCount with {}", printTable(table));
             int regionId = (int)(long)table["region_eid"];
@@ -551,7 +551,7 @@ namespace GenshinCBTServer.Controllers
     {
         public static List<GroupTrigger> errorTriggers = new();
 
-        public static void executeTrigger(Client client, GroupTrigger trigger, ScriptArgs args, SceneGroup group = null)
+        public static void executeTrigger(YPlayer client, GroupTrigger trigger, ScriptArgs args, SceneGroup group = null)
         {
             if (group == null)
             {
@@ -597,7 +597,7 @@ namespace GenshinCBTServer.Controllers
                 }
             }
         }
-        public static void executeClientTriggerLua(Client client, SceneGroup group, ScriptArgs args)
+        public static void executeClientTriggerLua(YPlayer client, SceneGroup group, ScriptArgs args)
         {
             if (group == null) return;
             GameEntity en = client.world.entities.Find(e => e.entityId == args.source_eid);
@@ -638,7 +638,7 @@ namespace GenshinCBTServer.Controllers
                 }
             }
         }
-        public static void executeTriggersLua(Client client, SceneGroup group, ScriptArgs args)
+        public static void executeTriggersLua(YPlayer client, SceneGroup group, ScriptArgs args)
         {
             if (group == null) return;
             List<GroupTrigger> triggers = group.triggers.FindAll(t => t.eventType == (int)args.type && !errorTriggers.Contains(t));
