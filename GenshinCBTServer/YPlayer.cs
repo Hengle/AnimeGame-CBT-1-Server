@@ -19,6 +19,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using System.Reflection;
 using GenshinCBTServer.Game.ItemUseAction;
 using GenshinCBTServer.Network.Send;
+using GenshinCBTServer.Game.Ability;
 
 namespace GenshinCBTServer
 {
@@ -39,6 +40,7 @@ namespace GenshinCBTServer
         public GuidRandomizer random = new GuidRandomizer();
         [BsonIgnore]
         private QuestManager questManager;
+        private AbilityManager abilityManager;
         [BsonIgnore]
         public IntPtr peer;
         [BsonIgnore]
@@ -187,7 +189,10 @@ namespace GenshinCBTServer
             prop.Ival = value;
             map.Add(type, prop);
         }
-
+        public AbilityManager GetAbilityManager()
+        {
+            return abilityManager;
+        }
         public QuestManager GetQuestManager()
         {
             return questManager;
@@ -284,7 +289,7 @@ namespace GenshinCBTServer
                 allSeenMonsterNotify.MonsterIdList.Add(monsterId);
             }
             //For testing fast
-            // avatars.Add(new Avatar(this, 10000016));
+             avatars.Add(new Avatar(this, 10000016));
 
             /*foreach (var avatar in Server.getResources().avatarsData)
             {
@@ -325,6 +330,7 @@ namespace GenshinCBTServer
                 questManager.AddQuest(35100);
                 
             }
+            abilityManager = new(this);
             SendPacket(CmdType.CookDataNotify, cookDataNotify);
             SendPacket(CmdType.CompoundDataNotify, compoundDataNtf);
             SendInventory();

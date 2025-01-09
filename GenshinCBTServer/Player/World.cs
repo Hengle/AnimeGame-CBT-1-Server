@@ -418,7 +418,10 @@ namespace GenshinCBTServer.Player
         {
             return sceneTime;
         }
-
+        public GameEntity GetEntityById(uint id)
+        {
+            return entities.Find(e => e.entityId == id);
+        }
         public void ScheduleDelayedTask(Action value, int time)
         {
             new Thread(new ThreadStart(() =>
