@@ -15,17 +15,26 @@ namespace GenshinCBTServer.Game.Ability
         }
         public void Invoke(AbilityInvokeEntry invoke)
         {
+
+            if (invoke.Head.LocalId != 0)
+            {
+                HandleServerInvoke(invoke);
+                return;
+            }
             switch(invoke.ArgumentType)
             {
                 case AbilityInvokeArgument.AbilityMetaAddNewAbility:
                     HandleAddNewAbility(invoke);
                     break;
                 default:
-
+                    HandleServerInvoke(invoke);
                     break;
             }
         }
+        public void HandleServerInvoke(AbilityInvokeEntry invoke)
+        {
 
+        }
         private void HandleAddNewAbility(AbilityInvokeEntry invoke)
         {
             var entity = this.player.world.GetEntityById(invoke.Head.TargetId);

@@ -302,7 +302,7 @@ namespace GenshinCBTServer
 
             // Find the avatar with the id of the first avatar in the team, and get its guid
             selectedAvatar = (int)avatars.FirstOrDefault((avatar) => avatar.id == team.First()).guid;*/
-            // selectedAvatar = (int)avatars[0].guid;
+             selectedAvatar = (int)avatars[0].guid;
             // for cooking stuff
             CookDataNotify cookDataNotify = new();
             foreach (CookRecipeExcel recipe in Server.getResources().cookRecipeDict.Values)
