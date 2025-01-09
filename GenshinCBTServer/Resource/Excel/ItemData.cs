@@ -11,6 +11,8 @@ public class ItemData
     public uint mainPropDepotId;
     public uint rankLevel;
     public uint appendPropDepotId;
+    public ItemUseTarget useTarget;
+    public List<ItemUseConfig> itemUse = new();
     public EquipType GetEquipType()
     {
         return equipType;

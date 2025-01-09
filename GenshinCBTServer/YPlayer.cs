@@ -17,6 +17,8 @@ using Org.BouncyCastle.Ocsp;
 using System.Numerics;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Reflection;
+using GenshinCBTServer.Game.ItemUseAction;
+using GenshinCBTServer.Network.Send;
 
 namespace GenshinCBTServer
 {
@@ -456,6 +458,34 @@ namespace GenshinCBTServer
         {
             //TODO save in a dic or mapfield
             GetQuestManager().TriggerEvent(QuestContent.QUEST_CONTENT_ADD_QUEST_PROGRESS, id, newCount);
+        }
+
+        public GameItem GetItemByGuid(ulong guid)
+        {
+           return inventory.Find(i=>i.guid==guid);
+        }
+        public void UseItem(GameItem item,ulong targetGuid,uint count)
+        {
+            ItemData data = Server.getResources().itemData[item.id];
+            foreach(ItemUseConfig config in data.itemUse)
+            {
+                UseItemParams param = new UseItemParams()
+                {
+                    player = this,
+                    itemUseConfig = config,
+                    useTarget = data.useTarget,
+                    targetGuid = targetGuid
+                };
+                ItemUseAction action = ItemUseAction.FromItemUseOp(param);
+                if (action != null) action.UseItem(param);
+            }
+           
+        }
+
+        public void AddAvatar(Avatar avatar)
+        {
+            avatars.Add(avatar);
+            SendPacket(new PacketAvatarAddNotify(avatar));
         }
 
         public YPlayer(IntPtr iD)

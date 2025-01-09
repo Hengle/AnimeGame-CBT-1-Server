@@ -96,6 +96,7 @@ namespace GenshinCBTServer.Player
                 EquipGuidList = { weaponGuid },
                 LifeState = curHp > 0 ? (uint)LifeState.LIFE_ALIVE : (uint)LifeState.LIFE_DEAD,
                 SkillDepotId = skillDepotId,
+                
             };
             info.TalentIdList.Add(getTalents());
             // info.SkillMap.Add(10001, new AvatarSkillInfo() { });
