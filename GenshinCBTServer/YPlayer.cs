@@ -131,6 +131,20 @@ namespace GenshinCBTServer
             addProp((uint)PropType.PROP_IS_WORLD_ENTERABLE, 1, props);
             return props;
         }
+        public void RemoveItemAmount(GameItem item, uint amount)
+        {
+            item.amount -= (int)amount;
+            if (item.amount < 1)
+            {
+                inventory.Remove(item);
+                SendPacket(new PacketStoreItemDelNotify(item));
+            }
+            else
+            {
+                SendPacket(new PacketStoreItemChangeNotify(item));
+            }
+            
+        }
         public void AddItem(GameItem item, ItemAddReasonType type= ItemAddReasonType.ItemAddReasonTrifle)
         {
             if (item.GetExcel().itemType == ItemType.ITEM_MATERIAL || item.GetExcel().itemType == ItemType.ITEM_VIRTUAL)
@@ -254,7 +268,7 @@ namespace GenshinCBTServer
             {
                 openStateNotify.OpenStateMap.Add(state.Key, state.Value);
             }
-           /* foreach (ItemData itemData in Server.getResources().itemData.Values)
+            foreach (ItemData itemData in Server.getResources().itemData.Values)
             {
                 if (itemData.itemType == ItemType.ITEM_MATERIAL || itemData.itemType == ItemType.ITEM_WEAPON)
                 {
@@ -264,7 +278,7 @@ namespace GenshinCBTServer
                     inventory.Add(it);
                 }
 
-            }*/
+            }
             foreach (uint monsterId in Server.getResources().monsterDataDict.Keys)
             {
                 allSeenMonsterNotify.MonsterIdList.Add(monsterId);
@@ -467,18 +481,34 @@ namespace GenshinCBTServer
         public void UseItem(GameItem item,ulong targetGuid,uint count)
         {
             ItemData data = Server.getResources().itemData[item.id];
-            foreach(ItemUseConfig config in data.itemUse)
+            for(int i=0; i < count; i++)
             {
-                UseItemParams param = new UseItemParams()
+                bool usedSuccess = false;
+                foreach (ItemUseConfig config in data.itemUse)
                 {
-                    player = this,
-                    itemUseConfig = config,
-                    useTarget = data.useTarget,
-                    targetGuid = targetGuid
-                };
-                ItemUseAction action = ItemUseAction.FromItemUseOp(param);
-                if (action != null) action.UseItem(param);
+                    UseItemParams param = new UseItemParams()
+                    {
+                        player = this,
+                        itemUseConfig = config,
+                        useTarget = data.useTarget,
+                        targetGuid = targetGuid
+                    };
+                    ItemUseAction action = ItemUseAction.FromItemUseOp(param);
+                    if (action != null)
+                    {
+                        if (action.UseItem(param))
+                        {
+                            usedSuccess = true;
+                        }
+
+                    }
+                }
+                if (usedSuccess)
+                {
+                    RemoveItemAmount(item, 1);
+                }
             }
+            
            
         }
 
