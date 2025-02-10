@@ -21,6 +21,8 @@ namespace GenshinCBTServer.Game.ItemUseAction
             {
                 case ItemUseOp.ITEM_USE_GAIN_AVATAR:
                     return new ItemUseGainAvatar(param.itemUseConfig.useParam.ToArray());
+                case ItemUseOp.ITEM_USE_ADD_CUR_HP:
+                    return null;
                 default:
                     return null;
             }

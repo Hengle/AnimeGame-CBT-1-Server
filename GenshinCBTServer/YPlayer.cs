@@ -131,6 +131,7 @@ namespace GenshinCBTServer
             addProp((uint)PropType.PROP_PLAYER_HCOIN, GetPrimo, props);
             addProp((uint)PropType.PROP_PLAYER_SCOIN, GetMora, props);
             addProp((uint)PropType.PROP_IS_WORLD_ENTERABLE, 1, props);
+            addProp((uint)PropType.PROP_IS_MP_MODE_AVAILABLE, 1, props);
             return props;
         }
         public void RemoveItemAmount(GameItem item, uint amount)
